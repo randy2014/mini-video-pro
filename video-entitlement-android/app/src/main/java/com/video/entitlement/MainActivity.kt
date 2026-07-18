@@ -1,19 +1,29 @@
 package com.video.entitlement
 
 import android.annotation.SuppressLint
+import android.app.DownloadManager
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.graphics.*
 import android.graphics.drawable.GradientDrawable
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.Environment
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
 import android.webkit.*
 import android.widget.*
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.FileProvider
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import org.json.JSONObject
+import java.io.File
 import java.net.HttpURLConnection
 import java.net.URL
 
@@ -34,6 +44,7 @@ class MainActivity : AppCompatActivity() {
 
     private var currentUrl = ""
     private var currentTitle = ""
+    private var downloadId: Long = -1L
 
     private val dp1 get() = resources.displayMetrics.density
     private val API_BASE = "http://43.161.222.78:8081"
@@ -71,6 +82,9 @@ class MainActivity : AppCompatActivity() {
             initViews()
             showVersion()
             setupWebView()
+            checkUpdate()
+            registerReceiver(downloadReceiver, IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE),
+                Context.RECEIVER_EXPORTED)
             fetchPlatforms()
         } catch (e: Exception) {
             showError("启动失败: ${e.message}")
@@ -381,8 +395,106 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onDestroy() {
+        try { unregisterReceiver(downloadReceiver) } catch (_: Exception) {}
         try { webView?.destroy() } catch (_: Exception) { }
         super.onDestroy()
+    }
+
+    // ====== 版本更新检查 ======
+    private fun checkUpdate() {
+        Thread {
+            try {
+                val conn = URL("$API_BASE/api/v1/client/version").openConnection() as HttpURLConnection
+                conn.connectTimeout = 8000; conn.readTimeout = 8000
+                val json = JSONObject(conn.inputStream.reader().readText())
+                val data = json.optJSONObject("data") ?: return@Thread
+                val serverCode = data.optInt("versionCode", 0)
+                val serverName = data.optString("versionName", "")
+                val downloadUrl = data.optString("downloadUrl", "")
+                val notes = data.optString("releaseNotes", "")
+                val force = data.optBoolean("forceUpdate", false)
+                conn.disconnect()
+
+                val localCode = packageManager.getPackageInfo(packageName, 0).versionCode
+                if (serverCode > localCode && downloadUrl.isNotEmpty()) {
+                    runOnUiThread { showUpdateDialog(serverName, notes, downloadUrl, force) }
+                }
+            } catch (_: Exception) { /* 版本检查静默失败 */ }
+        }.start()
+    }
+
+    private fun showUpdateDialog(vName: String, notes: String, url: String, force: Boolean) {
+        val msg = "发现新版本 $vName\n\n$notes"
+        AlertDialog.Builder(this)
+            .setTitle("版本更新")
+            .setMessage(msg)
+            .setCancelable(!force)
+            .setPositiveButton("立即更新") { _, _ -> downloadAndInstall(url, vName) }
+            .apply { if (!force) setNegativeButton("稍后", null) }
+            .show()
+    }
+
+    private fun downloadAndInstall(url: String, vName: String) {
+        try {
+            val file = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
+                "mini-video-$vName.apk")
+            if (file.exists()) file.delete()
+
+            val req = DownloadManager.Request(Uri.parse(url)).apply {
+                setTitle("迷你视频更新")
+                setDescription("正在下载 $vName ...")
+                setDestinationUri(Uri.fromFile(file))
+                setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
+            }
+            val dm = getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
+            downloadId = dm.enqueue(req)
+            toast("开始下载更新...")
+        } catch (e: Exception) {
+            toast("下载失败: ${e.message}")
+        }
+    }
+
+    private val downloadReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            val id = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1)
+            if (id != downloadId) return
+            try {
+                val dm = getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
+                val query = DownloadManager.Query().setFilterById(id)
+                val cursor = dm.query(query)
+                if (cursor.moveToFirst()) {
+                    val status = cursor.getInt(cursor.getColumnIndexOrThrow(DownloadManager.COLUMN_STATUS))
+                    if (status == DownloadManager.STATUS_SUCCESSFUL) {
+                        val uri = dm.getUriForDownloadedFile(id)
+                        installApk(uri)
+                    } else {
+                        toast("下载失败")
+                    }
+                }
+                cursor.close()
+            } catch (e: Exception) {
+                toast("安装准备失败: ${e.message}")
+            }
+        }
+    }
+
+    private fun installApk(uri: Uri) {
+        try {
+            val installIntent = Intent(Intent.ACTION_VIEW).apply {
+                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                setDataAndType(uri, "application/vnd.android.package-archive")
+            }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                val apkUri = FileProvider.getUriForFile(this,
+                    "${packageName}.fileprovider",
+                    File(uri.path ?: return))
+                installIntent.setDataAndType(apkUri, "application/vnd.android.package-archive")
+            }
+            startActivity(installIntent)
+        } catch (e: Exception) {
+            toast("安装失败: ${e.message}")
+        }
     }
 
     companion object {

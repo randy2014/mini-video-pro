@@ -3,6 +3,9 @@ plugins {
     id("org.jetbrains.kotlin.android")
 }
 
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+
 android {
     namespace = "com.video.entitlement"
     compileSdk = 35
@@ -10,8 +13,11 @@ android {
         applicationId = "com.video.entitlement"
         minSdk = 24
         targetSdk = 35
-        versionCode = 3
-        versionName = "1.2"
+        // 测试版: 0.9.yyyyMMddHHmm  正式版: 1.0.yyyyMMddHHmm
+        val now = LocalDateTime.now()
+        val ts = now.format(DateTimeFormatter.ofPattern("yyyyMMddHHmm"))
+        versionName = "0.9.$ts"
+        versionCode = ts.substring(4).toInt()  // MMddHHmm 整数, 如 07191345
     }
     buildTypes {
         release { isMinifyEnabled = false }

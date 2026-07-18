@@ -36,6 +36,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/v1/auth/captcha").permitAll()
                 .requestMatchers("/api/v1/auth/refresh").permitAll()
                 .requestMatchers("/api/v1/client/platforms").permitAll()
+                .requestMatchers("/api/v1/client/version").permitAll()
                 // Admin login
                 .requestMatchers(HttpMethod.POST, "/admin/api/v1/auth/login").permitAll()
                 // Admin APIs require ADMIN role
