@@ -241,18 +241,6 @@
                 android:textStyle="bold"
                 android:paddingStart="6dp"
                 android:paddingEnd="6dp" />
-
-            <TextView
-                android:id="@+id/play_btn"
-                android:layout_width="wrap_content"
-                android:layout_height="34dp"
-                android:text=" ▶ 播放"
-                android:textSize="13sp"
-                android:textColor="#FFFFFF"
-                android:gravity="center"
-                android:background="@drawable/bg_play_btn"
-                android:paddingStart="16dp"
-                android:paddingEnd="16dp" />
         </LinearLayout>
 
         <!-- 进度条 -->

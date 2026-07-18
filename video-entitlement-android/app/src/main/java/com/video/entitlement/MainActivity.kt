@@ -1,7 +1,6 @@
 package com.video.entitlement
 
 import android.annotation.SuppressLint
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.*
 import android.graphics.drawable.GradientDrawable
@@ -18,7 +17,6 @@ import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import com.video.entitlement.player.VideoPlayerActivity
 import org.json.JSONObject
 import java.net.HttpURLConnection
 import java.net.URL
@@ -30,7 +28,6 @@ class MainActivity : AppCompatActivity() {
     private var webView: WebView? = null
     private var titleText: TextView? = null
     private var progressBar: ProgressBar? = null
-    private var playBtn: TextView? = null
     private var backBtn: TextView? = null
     private var homeContainer: View? = null
     private var browserContainer: View? = null
@@ -104,7 +101,6 @@ class MainActivity : AppCompatActivity() {
         browserContainer = findViewById(R.id.browser_container)
         titleText = findViewById(R.id.title_text)
         progressBar = findViewById(R.id.progress_bar)
-        playBtn = findViewById(R.id.play_btn)
         backBtn = findViewById(R.id.back_btn)
         platformContainer = findViewById(R.id.platform_container)
         webView = findViewById(R.id.web_view)
@@ -118,7 +114,6 @@ class MainActivity : AppCompatActivity() {
         backBtn?.setOnClickListener {
             if (browserContainer?.visibility == View.VISIBLE) showHome()
         }
-        playBtn?.setOnClickListener { openInPlayer() }
     }
 
     @SuppressLint("SetJavaScriptEnabled")
@@ -160,7 +155,6 @@ class MainActivity : AppCompatActivity() {
                 }
                 override fun onShowCustomView(view: View?, cb: CustomViewCallback?) {
                     cb?.onCustomViewHidden()
-                    playBtn?.visibility = View.VISIBLE
                 }
             }
         } catch (_: Exception) { }
@@ -348,16 +342,6 @@ class MainActivity : AppCompatActivity() {
             browserContainer?.visibility = View.GONE
             homeContainer?.visibility = View.VISIBLE
             webView?.stopLoading(); webView?.loadUrl("about:blank")
-        } catch (_: Exception) { }
-    }
-
-    private fun openInPlayer() {
-        try {
-            val url = currentUrl.ifEmpty { return }
-            if (url == "about:blank") { toast("没有可播放的地址"); return }
-            startActivity(Intent(this, VideoPlayerActivity::class.java).apply {
-                putExtra("url", url); putExtra("title", titleText?.text?.toString() ?: "播放")
-            })
         } catch (_: Exception) { }
     }
 
