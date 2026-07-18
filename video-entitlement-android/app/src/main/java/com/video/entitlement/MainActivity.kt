@@ -138,30 +138,62 @@ class MainActivity : AppCompatActivity() {
     private fun setupWebView() {
         val wv = webView ?: return
         try {
+            // 调试模式
+            WebView.setWebContentsDebuggingEnabled(true)
+
             wv.settings.apply {
-                javaScriptEnabled = true; domStorageEnabled = true
+                javaScriptEnabled = true
+                domStorageEnabled = true
                 mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
-                useWideViewPort = true; loadWithOverviewMode = true
-                setSupportZoom(true); builtInZoomControls = true
+                useWideViewPort = true
+                loadWithOverviewMode = true
+                setSupportZoom(true)
+                builtInZoomControls = true
                 displayZoomControls = false
+                allowFileAccess = true
+                allowContentAccess = true
+                cacheMode = WebSettings.LOAD_DEFAULT
+                // 伪装桌面浏览器 UA，避免被视频站拦截
+                userAgentString = "Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.6099.144 Mobile Safari/537.36"
+                setGeolocationEnabled(true)
+                setSupportMultipleWindows(false)
             }
+
             wv.webViewClient = object : WebViewClient() {
                 override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
-                    progressBar?.visibility = View.VISIBLE; if (url != null) currentUrl = url
+                    progressBar?.visibility = View.VISIBLE
+                    if (url != null) currentUrl = url
                 }
+
                 override fun onPageFinished(view: WebView?, url: String?) {
                     progressBar?.visibility = View.GONE
                     if (url != null && !usingVip) originalUrl = url
                     if (!usingVip) titleText?.text = view?.title ?: currentTitle
                 }
+
+                override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean {
+                    return false // 让 WebView 自己处理所有 URL
+                }
+
+                override fun onReceivedError(view: WebView?, request: WebResourceRequest?, error: WebResourceError?) {
+                    progressBar?.visibility = View.GONE
+                    val msg = error?.description?.toString() ?: "加载失败"
+                    titleText?.text = "⚠ $msg"
+                }
             }
+
             wv.webChromeClient = object : WebChromeClient() {
                 override fun onReceivedTitle(view: WebView?, title: String?) {
                     if (title != null && !usingVip) titleText?.text = title
                 }
-                override fun onProgressChanged(view: WebView?, p: Int) { progressBar?.progress = p }
+                override fun onProgressChanged(view: WebView?, p: Int) {
+                    progressBar?.progress = p
+                    if (p == 100) progressBar?.visibility = View.GONE
+                }
             }
-        } catch (_: Exception) { }
+        } catch (e: Exception) {
+            toast("WebView初始化失败: ${e.message}")
+        }
     }
 
     private fun loadVipApis() {

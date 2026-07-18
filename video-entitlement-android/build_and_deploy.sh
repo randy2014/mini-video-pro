@@ -25,6 +25,7 @@ scp -i "$SSH_KEY" -o StrictHostKeyChecking=no "/workspace/${APK_NAME}" "${SERVER
 
 echo "📦 更新 nginx 下载目录..."
 ssh -i "$SSH_KEY" -o StrictHostKeyChecking=no "$SERVER" "
+  docker exec video-frontend mkdir -p /usr/share/nginx/html/downloads
   docker cp /tmp/apk/${APK_NAME} video-frontend:/usr/share/nginx/html/downloads/
   docker cp /tmp/apk/video-entitlement-latest.apk video-frontend:/usr/share/nginx/html/
 "
