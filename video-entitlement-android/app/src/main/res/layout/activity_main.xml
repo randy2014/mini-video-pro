@@ -208,7 +208,8 @@
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:visibility="gone"
-        android:background="#1A0A2E">
+        android:background="#1A0A2E"
+        android:fitsSystemWindows="true">
 
         <!-- 浏览器顶栏 -->
         <LinearLayout
