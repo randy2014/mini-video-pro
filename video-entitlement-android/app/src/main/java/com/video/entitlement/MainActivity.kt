@@ -57,6 +57,15 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         try {
+            // 登录检查：未登录则跳转 LoginActivity
+            val token = getSharedPreferences("auth", MODE_PRIVATE)
+                .getString("access_token", null)
+            if (token.isNullOrEmpty()) {
+                startActivity(android.content.Intent(this, LoginActivity::class.java))
+                finish()
+                return
+            }
+
             setContentView(R.layout.activity_main)
             enableEdgeToEdge()
             initViews()

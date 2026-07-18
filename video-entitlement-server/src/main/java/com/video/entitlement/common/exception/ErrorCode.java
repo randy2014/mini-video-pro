@@ -8,6 +8,8 @@ public enum ErrorCode {
     AUTH_TOKEN_INVALID(1001, "Token无效"),
     AUTH_TOKEN_EXPIRED(1002, "Token已过期"),
     AUTH_CREDENTIALS_INVALID(1003, "用户名或密码错误"),
+    CAPTCHA_INVALID(1004, "图形验证码错误"),
+    CAPTCHA_EXPIRED(1005, "图形验证码已过期"),
 
     // 用户
     USER_DISABLED(2001, "用户已禁用"),

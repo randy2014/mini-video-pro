@@ -5,6 +5,10 @@ import com.video.entitlement.common.exception.ErrorCode;
 import com.video.entitlement.common.security.JwtTokenProvider;
 import com.video.entitlement.module.device.entity.UserDevice;
 import com.video.entitlement.module.device.repository.UserDeviceRepository;
+import com.video.entitlement.module.entitlement.entity.Entitlement;
+import com.video.entitlement.module.entitlement.entity.UserEntitlement;
+import com.video.entitlement.module.entitlement.repository.EntitlementRepository;
+import com.video.entitlement.module.entitlement.repository.UserEntitlementRepository;
 import com.video.entitlement.module.user.dto.*;
 import com.video.entitlement.module.user.entity.UserAccount;
 import com.video.entitlement.module.user.entity.UserLoginLog;
@@ -15,6 +19,7 @@ import com.video.entitlement.module.user.repository.UserLoginLogRepository;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,26 +35,38 @@ public class UserService {
     private final UserDeviceRepository userDeviceRepository;
     private final UserLoginLogRepository userLoginLogRepository;
     private final JwtTokenProvider jwtTokenProvider;
+    private final PasswordEncoder passwordEncoder;
+    private final CaptchaService captchaService;
+    private final EntitlementRepository entitlementRepository;
+    private final UserEntitlementRepository userEntitlementRepository;
 
     @Transactional
     public AuthResponse login(UserLoginRequest request) {
-        // Verify code (simplified: accept any code for dev)
-        if (!"000000".equals(request.getVerificationCode())) {
-            logLogin(null, request.getDevicePublicId(), LoginResult.FAILED, "Invalid code");
-            throw new BusinessException(ErrorCode.AUTH_TOKEN_INVALID, "验证码错误");
-        }
+        // 1. 图形验证码校验（一次性）
+        captchaService.validate(request.getCaptchaKey(), request.getCaptchaCode());
+
+        // 2. 按账号(mobile)查找，不存在则自动注册（账号+密码+权益码写入）
         UserAccount user = userAccountRepository.findByMobile(request.getMobile())
-                .orElseGet(() -> createUser(request.getMobile()));
+                .orElseGet(() -> createUser(request.getMobile(), request.getPassword(), request.getEntitlementCode()));
+
+        // 3. 密码校验
+        if (user.getPassword() == null || !passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+            logLogin(user.getId(), request.getDevicePublicId(), LoginResult.FAILED, "Password mismatch");
+            throw new BusinessException(ErrorCode.AUTH_CREDENTIALS_INVALID);
+        }
 
         if (UserStatus.DISABLED.getCode().equals(user.getStatus())) {
             logLogin(user.getId(), request.getDevicePublicId(), LoginResult.BLOCKED, "User disabled");
             throw new BusinessException(ErrorCode.USER_DISABLED);
         }
 
-        // Bind device
+        // 绑定权益码（登录时自动关联用户权益）
+        bindUserEntitlement(user, request.getEntitlementCode());
+
+        // 4. 绑定设备
         bindDevice(user.getId(), request.getDevicePublicId(), request.getClientType(), request.getAppVersion());
 
-        // Update login info
+        // 5. 更新登录信息
         user.setLastLoginAt(LocalDateTime.now());
         userAccountRepository.save(user);
 
@@ -89,14 +106,31 @@ public class UserService {
                 .expiresIn(jwtTokenProvider.getAccessExpirationMs() / 1000).build();
     }
 
-    private UserAccount createUser(String mobile) {
+    private UserAccount createUser(String mobile, String password, String entitlementCode) {
         String userNo = "U" + UUID.randomUUID().toString().replace("-", "").substring(0, 16);
         UserAccount user = UserAccount.builder()
                 .userNo(userNo).mobile(mobile)
+                .password(passwordEncoder.encode(password))
+                .entitlementCode(entitlementCode)
                 .nickname("用户" + mobile.substring(Math.max(0, mobile.length() - 4)))
                 .status(UserStatus.ACTIVE.getCode())
                 .riskLevel("LOW").build();
         return userAccountRepository.save(user);
+    }
+
+    private void bindUserEntitlement(UserAccount user, String entitlementCode) {
+        if (entitlementCode == null || entitlementCode.isBlank()) return;
+        entitlementRepository.findByEntitlementCode(entitlementCode)
+                .ifPresent(ent -> userEntitlementRepository
+                        .findByUserIdAndEntitlementId(user.getId(), ent.getId())
+                        .orElseGet(() -> userEntitlementRepository.save(
+                            UserEntitlement.builder()
+                                    .userId(user.getId())
+                                    .entitlementId(ent.getId())
+                                    .entitlementCode(ent.getEntitlementCode())
+                                    .obtainedAt(LocalDateTime.now())
+                                    .expireTime(ent.getEndTime())
+                                    .status("ACTIVE").build())));
     }
 
     private void bindDevice(Long userId, String devicePublicId, String clientType, String appVersion) {

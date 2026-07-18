@@ -25,6 +25,12 @@ public class UserAccount {
     @Column(length = 32)
     private String mobile;
 
+    @Column(name = "password", length = 100)
+    private String password;
+
+    @Column(name = "entitlement_code", length = 64)
+    private String entitlementCode;
+
     @Column(length = 64)
     private String nickname;
 
