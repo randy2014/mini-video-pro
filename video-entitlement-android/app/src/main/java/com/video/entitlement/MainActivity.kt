@@ -182,7 +182,10 @@ class MainActivity : AppCompatActivity() {
                     platforms = list; ok = true
                 }
                 conn.disconnect()
-            } catch (_: Exception) { }
+            } catch (e: Exception) {
+                // 网络/解析错误会被下面 runOnUiThread 的 else 分支处理
+                e.printStackTrace()
+            }
 
             runOnUiThread {
                 showLoading(false)
