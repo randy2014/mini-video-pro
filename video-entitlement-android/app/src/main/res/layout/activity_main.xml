@@ -214,6 +214,19 @@
                 android:background="@drawable/bg_next_btn"
                 android:paddingStart="14dp"
                 android:paddingEnd="14dp" />
+
+            <TextView
+                android:id="@+id/play_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="32dp"
+                android:text="▶播放"
+                android:textSize="12sp"
+                android:textColor="#FFFFFF"
+                android:gravity="center"
+                android:background="@drawable/bg_play_btn"
+                android:paddingStart="14dp"
+                android:paddingEnd="14dp"
+                android:layout_marginStart="4dp" />
         </LinearLayout>
 
         <ProgressBar

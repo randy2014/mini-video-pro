@@ -1,10 +1,10 @@
 package com.video.entitlement
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.graphics.*
 import android.graphics.drawable.GradientDrawable
-import android.graphics.drawable.ShapeDrawable
-import android.graphics.drawable.shapes.RoundRectShape
+import android.net.Uri
 import android.os.Bundle
 import android.view.Gravity
 import android.view.View
@@ -12,6 +12,7 @@ import android.view.ViewGroup
 import android.webkit.*
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import com.video.entitlement.player.VideoPlayerActivity
 import org.json.JSONObject
 import java.net.HttpURLConnection
 import java.net.URL
@@ -26,6 +27,7 @@ class MainActivity : AppCompatActivity() {
     private var progressBar: ProgressBar? = null
     private var vipBtn: TextView? = null
     private var nextBtn: TextView? = null
+    private var playBtn: TextView? = null
     private var backBtn: TextView? = null
     private var homeContainer: View? = null
     private var browserContainer: View? = null
@@ -116,8 +118,10 @@ class MainActivity : AppCompatActivity() {
         progressBar = findViewById(R.id.progress_bar)
         vipBtn = findViewById(R.id.vip_btn)
         nextBtn = findViewById(R.id.next_btn)
+        playBtn = findViewById(R.id.play_btn)
         backBtn = findViewById(R.id.back_btn)
         platformContainer = findViewById(R.id.platform_container)
+        webView = findViewById(R.id.web_view)
 
         backBtn?.setOnClickListener {
             if (browserContainer?.visibility == View.VISIBLE) showHome()
@@ -132,6 +136,7 @@ class MainActivity : AppCompatActivity() {
             currentVipIdx = (currentVipIdx + 1) % vipApis.size
             applyVipApi()
         }
+        playBtn?.setOnClickListener { openInPlayer() }
     }
 
     @SuppressLint("SetJavaScriptEnabled")
@@ -190,6 +195,14 @@ class MainActivity : AppCompatActivity() {
                     progressBar?.progress = p
                     if (p == 100) progressBar?.visibility = View.GONE
                 }
+                // 检测全屏视频 (H5 video标签)
+                private var customViewCallback: CustomViewCallback? = null
+                override fun onShowCustomView(view: View?, callback: CustomViewCallback?) {
+                    // 视频进入全屏，用外部播放器处理
+                    callback?.onCustomViewHidden()
+                    playBtn?.visibility = View.VISIBLE
+                }
+                override fun onHideCustomView() { }
             }
         } catch (e: Exception) {
             toast("WebView初始化失败: ${e.message}")
@@ -389,6 +402,21 @@ class MainActivity : AppCompatActivity() {
             webView?.loadUrl(api.url + target)
             toast(api.name)
         } catch (e: Exception) { toast("解析失败") }
+    }
+
+    private fun openInPlayer() {
+        try {
+            val url = currentUrl.ifEmpty { originalUrl }
+            if (url.isBlank() || url == "about:blank") {
+                toast("没有可播放的地址")
+                return
+            }
+            val intent = Intent(this, VideoPlayerActivity::class.java).apply {
+                putExtra("url", url)
+                putExtra("title", titleText?.text?.toString() ?: "视频播放")
+            }
+            startActivity(intent)
+        } catch (e: Exception) { toast("启动播放器失败") }
     }
 
     private fun toast(msg: String) {

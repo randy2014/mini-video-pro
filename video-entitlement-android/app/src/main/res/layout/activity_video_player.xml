@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#000000">
+
+    <androidx.media3.ui.PlayerView
+        android:id="@+id/player_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:resize_mode="fit"
+        app:use_controller="true"
+        app:show_buffering="when_playing"
+        app:surface_type="surface_view" />
+
+    <!-- 顶部标题栏 -->
+    <LinearLayout
+        android:id="@+id/player_top_bar"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_gravity="top"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:background="#80000000"
+        android:paddingStart="4dp"
+        android:paddingEnd="8dp">
+
+        <ImageView
+            android:id="@+id/player_back"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@android:drawable/ic_menu_revert"
+            android:padding="8dp"
+            android:tint="#FFFFFF" />
+
+        <TextView
+            android:id="@+id/video_title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="视频播放"
+            android:textSize="14sp"
+            android:textColor="#FFFFFF"
+            android:singleLine="true"
+            android:ellipsize="end" />
+
+        <ImageView
+            android:id="@+id/player_fullscreen"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@android:drawable/ic_menu_crop"
+            android:padding="8dp"
+            android:tint="#FFFFFF" />
+    </LinearLayout>
+
+</FrameLayout>
