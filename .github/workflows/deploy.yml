@@ -110,6 +110,7 @@ jobs:
               -e DB_USERNAME=video_user \
               -e DB_PASSWORD=${{ secrets.DB_PASSWORD }} \
               -e REDIS_HOST=video-redis \
+              -e REDIS_PASSWORD=${{ secrets.DB_PASSWORD }} \
               -e JWT_ACCESS_SECRET=${{ secrets.JWT_ACCESS_SECRET }} \
               -e JWT_REFRESH_SECRET=${{ secrets.JWT_REFRESH_SECRET }} \
               -e ENTITLEMENT_HMAC_KEY=${{ secrets.ENTITLEMENT_HMAC_KEY }} \
