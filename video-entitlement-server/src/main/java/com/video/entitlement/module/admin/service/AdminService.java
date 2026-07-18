@@ -40,9 +40,9 @@ public class AdminService {
 
     public AdminLoginResponse login(AdminLoginRequest request) {
         AdminUser user = adminUserRepository.findByUsername(request.getUsername())
-                .orElseThrow(() -> new BusinessException(ErrorCode.AUTH_TOKEN_INVALID));
+                .orElseThrow(() -> new BusinessException(ErrorCode.AUTH_CREDENTIALS_INVALID));
         if (!passwordEncoder.matches(request.getPassword(), user.getPasswordHash())) {
-            throw new BusinessException(ErrorCode.AUTH_TOKEN_INVALID);
+            throw new BusinessException(ErrorCode.AUTH_CREDENTIALS_INVALID);
         }
         if (!"ACTIVE".equals(user.getStatus())) {
             throw new BusinessException(ErrorCode.USER_DISABLED);

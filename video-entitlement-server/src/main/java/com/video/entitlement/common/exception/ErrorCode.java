@@ -7,6 +7,7 @@ public enum ErrorCode {
     // 认证
     AUTH_TOKEN_INVALID(1001, "Token无效"),
     AUTH_TOKEN_EXPIRED(1002, "Token已过期"),
+    AUTH_CREDENTIALS_INVALID(1003, "用户名或密码错误"),
 
     // 用户
     USER_DISABLED(2001, "用户已禁用"),
