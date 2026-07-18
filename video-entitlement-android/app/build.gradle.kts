@@ -30,6 +30,9 @@ dependencies {
     // WebView 增强引擎
     implementation("androidx.webkit:webkit:1.9.0")
 
+    // 下拉刷新
+    implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
+
     // Media3 ExoPlayer 视频播放引擎
     implementation("androidx.media3:media3-exoplayer:1.4.1")
     implementation("androidx.media3:media3-ui:1.4.1")

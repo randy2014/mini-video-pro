@@ -5,148 +5,175 @@
     android:background="#F5F7FA">
 
     <!-- ====== 首页 ====== -->
-    <ScrollView
-        android:id="@+id/home_container"
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipe_refresh"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:visibility="visible"
-        android:scrollbars="none">
+        android:visibility="visible">
 
-        <LinearLayout
+        <ScrollView
+            android:id="@+id/home_scroll"
             android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scrollbars="none">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <!-- 顶部 Header -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:background="#1677FF"
+                    android:paddingTop="48dp"
+                    android:paddingBottom="24dp"
+                    android:paddingStart="20dp"
+                    android:paddingEnd="20dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="视频权益"
+                        android:textSize="26sp"
+                        android:textColor="#FFFFFF"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="全网VIP视频免费观看"
+                        android:textSize="13sp"
+                        android:textColor="#91CAFF"
+                        android:layout_marginTop="4dp" />
+                </LinearLayout>
+
+                <!-- 统计卡片 -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:padding="12dp"
+                    android:layout_marginTop="-12dp">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="72dp"
+                        android:layout_weight="1"
+                        android:layout_marginEnd="6dp"
+                        android:orientation="vertical"
+                        android:gravity="center"
+                        android:background="@drawable/bg_stat_card"
+                        android:elevation="4dp">
+                        <TextView
+                            android:id="@+id/stat_platforms"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="--"
+                            android:textSize="22sp"
+                            android:textColor="#1677FF"
+                            android:textStyle="bold" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="视频平台"
+                            android:textSize="11sp"
+                            android:textColor="#999999"
+                            android:layout_marginTop="2dp" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="72dp"
+                        android:layout_weight="1"
+                        android:layout_marginStart="6dp"
+                        android:layout_marginEnd="6dp"
+                        android:orientation="vertical"
+                        android:gravity="center"
+                        android:background="@drawable/bg_stat_card"
+                        android:elevation="4dp">
+                        <TextView
+                            android:id="@+id/stat_vip"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="--"
+                            android:textSize="22sp"
+                            android:textColor="#52C41A"
+                            android:textStyle="bold" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="解析线路"
+                            android:textSize="11sp"
+                            android:textColor="#999999"
+                            android:layout_marginTop="2dp" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="72dp"
+                        android:layout_weight="1"
+                        android:layout_marginStart="6dp"
+                        android:orientation="vertical"
+                        android:gravity="center"
+                        android:background="@drawable/bg_stat_card"
+                        android:elevation="4dp">
+                        <TextView
+                            android:id="@+id/stat_music"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="--"
+                            android:textSize="22sp"
+                            android:textColor="#FA8C16"
+                            android:textStyle="bold" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="音乐平台"
+                            android:textSize="11sp"
+                            android:textColor="#999999"
+                            android:layout_marginTop="2dp" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <!-- 平台容器 (纯动态) -->
+                <LinearLayout
+                    android:id="@+id/platform_container"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:paddingStart="12dp"
+                    android:paddingEnd="12dp"
+                    android:paddingBottom="24dp" />
+            </LinearLayout>
+        </ScrollView>
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+    <!-- 加载遮罩 -->
+    <LinearLayout
+        android:id="@+id/loading_overlay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:visibility="visible">
+
+        <ProgressBar
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:indeterminateTint="#1677FF" />
+
+        <TextView
+            android:id="@+id/loading_text"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <!-- 顶部 Header -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:background="#1677FF"
-                android:paddingTop="48dp"
-                android:paddingBottom="24dp"
-                android:paddingStart="20dp"
-                android:paddingEnd="20dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="视频权益"
-                    android:textSize="26sp"
-                    android:textColor="#FFFFFF"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="全网VIP视频免费观看"
-                    android:textSize="13sp"
-                    android:textColor="#91CAFF"
-                    android:layout_marginTop="4dp" />
-            </LinearLayout>
-
-            <!-- 统计卡片 -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:padding="12dp"
-                android:layout_marginTop="-12dp">
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="72dp"
-                    android:layout_weight="1"
-                    android:layout_marginEnd="6dp"
-                    android:orientation="vertical"
-                    android:gravity="center"
-                    android:background="@drawable/bg_stat_card"
-                    android:elevation="4dp">
-
-                    <TextView
-                        android:id="@+id/stat_platforms"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="13"
-                        android:textSize="22sp"
-                        android:textColor="#1677FF"
-                        android:textStyle="bold" />
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="视频平台"
-                        android:textSize="11sp"
-                        android:textColor="#999999"
-                        android:layout_marginTop="2dp" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="72dp"
-                    android:layout_weight="1"
-                    android:layout_marginStart="6dp"
-                    android:layout_marginEnd="6dp"
-                    android:orientation="vertical"
-                    android:gravity="center"
-                    android:background="@drawable/bg_stat_card"
-                    android:elevation="4dp">
-
-                    <TextView
-                        android:id="@+id/stat_vip"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="10"
-                        android:textSize="22sp"
-                        android:textColor="#52C41A"
-                        android:textStyle="bold" />
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="解析线路"
-                        android:textSize="11sp"
-                        android:textColor="#999999"
-                        android:layout_marginTop="2dp" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="72dp"
-                    android:layout_weight="1"
-                    android:layout_marginStart="6dp"
-                    android:orientation="vertical"
-                    android:gravity="center"
-                    android:background="@drawable/bg_stat_card"
-                    android:elevation="4dp">
-
-                    <TextView
-                        android:id="@+id/stat_music"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="3"
-                        android:textSize="22sp"
-                        android:textColor="#FA8C16"
-                        android:textStyle="bold" />
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="音乐平台"
-                        android:textSize="11sp"
-                        android:textColor="#999999"
-                        android:layout_marginTop="2dp" />
-                </LinearLayout>
-            </LinearLayout>
-
-            <!-- 平台容器 (动态填充) -->
-            <LinearLayout
-                android:id="@+id/platform_container"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:paddingStart="12dp"
-                android:paddingEnd="12dp"
-                android:paddingBottom="24dp" />
-        </LinearLayout>
-    </ScrollView>
+            android:text="加载中..."
+            android:textSize="14sp"
+            android:textColor="#999999"
+            android:layout_marginTop="12dp" />
+    </LinearLayout>
 
     <!-- ====== 浏览器 ====== -->
     <LinearLayout
@@ -157,7 +184,6 @@
         android:visibility="gone"
         android:background="#FFFFFF">
 
-        <!-- 浏览器工具栏 -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="56dp"
