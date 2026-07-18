@@ -40,9 +40,9 @@ fun HomeScreen(
     Scaffold(
         topBar = {
             TopAppBar(title = { Text("视频权益") }, actions = {
-                IconButton(onClick = onRedeem) { Icon(Icons.Default.CardGiftcard, "兑换") }
+                IconButton(onClick = onRedeem) { Icon(Icons.Default.Star, "兑换") }
                 IconButton(onClick = onMyEntitlements) { Icon(Icons.Default.Star, "我的权益") }
-                IconButton(onClick = onLogout) { Icon(Icons.Default.Logout, "退出") }
+                IconButton(onClick = onLogout) { Icon(Icons.Default.ExitToApp, "退出") }
             })
         }
     ) { padding ->
@@ -54,13 +54,13 @@ fun HomeScreen(
                 items(platforms) { platform ->
                     Card(modifier = Modifier.fillMaxWidth().clickable { onPlatformClick(platform.platformCode) }) {
                         Row(Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
-                            Icon(Icons.Default.PlayCircle, null, tint = MaterialTheme.colorScheme.primary)
+                            Icon(Icons.Default.PlayArrow, null, tint = MaterialTheme.colorScheme.primary)
                             Spacer(Modifier.width(12.dp))
                             Column(Modifier.weight(1f)) {
                                 Text(platform.platformName, style = MaterialTheme.typography.titleMedium)
                                 Text(platform.homeUrl, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                             }
-                            Icon(Icons.Default.ChevronRight, null)
+                            Icon(Icons.Default.KeyboardArrowRight, null)
                         }
                     }
                 }
