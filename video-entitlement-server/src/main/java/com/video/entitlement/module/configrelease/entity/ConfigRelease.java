@@ -42,8 +42,8 @@ public class ConfigRelease {
     @Column(name = "published_at")
     private LocalDateTime publishedAt;
 
-    @Column(name = "created_by", length = 64)
-    private String createdBy;
+    @Column(name = "created_by")
+    private Long createdBy;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
