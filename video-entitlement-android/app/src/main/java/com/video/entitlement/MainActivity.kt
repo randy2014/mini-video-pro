@@ -2,15 +2,21 @@ package com.video.entitlement
 
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.*
 import android.graphics.drawable.GradientDrawable
+import android.os.Build
 import android.os.Bundle
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowInsetsController
 import android.webkit.*
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.video.entitlement.player.VideoPlayerActivity
 import org.json.JSONObject
@@ -58,13 +64,39 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         try {
+            // 全屏沉浸式：内容延伸到状态栏和导航栏
+            enableEdgeToEdge()
             setContentView(R.layout.activity_main)
             initViews()
+            showVersion()
             setupWebView()
             fetchPlatforms()
         } catch (e: Exception) {
             showError("启动失败: ${e.message}")
         }
+    }
+
+    private fun enableEdgeToEdge() {
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+        val controller = WindowInsetsControllerCompat(window, window.decorView)
+        controller.isAppearanceLightStatusBars = false
+        controller.isAppearanceLightNavigationBars = false
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            window.insetsController?.apply {
+                setSystemBarsAppearance(0, WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS)
+                setSystemBarsAppearance(0, WindowInsetsController.APPEARANCE_LIGHT_NAVIGATION_BARS)
+            }
+        }
+    }
+
+    private fun showVersion() {
+        try {
+            val info = packageManager.getPackageInfo(packageName, 0)
+            val vName = info.versionName ?: "1.0"
+            val vCode = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P)
+                info.longVersionCode else info.versionCode.toLong()
+            findViewById<TextView>(R.id.version_text)?.text = "v$vName ($vCode)"
+        } catch (_: Exception) { }
     }
 
     private fun initViews() {

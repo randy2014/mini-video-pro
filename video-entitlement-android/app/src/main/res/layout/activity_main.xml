@@ -159,7 +159,18 @@
                     android:orientation="vertical"
                     android:paddingStart="16dp"
                     android:paddingEnd="16dp"
-                    android:paddingBottom="32dp" />
+                    android:paddingBottom="12dp" />
+
+                <!-- 版本号 -->
+                <TextView
+                    android:id="@+id/version_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="v1.2"
+                    android:textSize="11sp"
+                    android:textColor="#555566"
+                    android:gravity="center"
+                    android:paddingBottom="48dp" />
             </LinearLayout>
         </ScrollView>
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

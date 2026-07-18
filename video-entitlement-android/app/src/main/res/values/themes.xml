@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <style name="Theme.VideoEntitlement" parent="Theme.AppCompat.Light.NoActionBar">
-        <item name="colorPrimary">#1677FF</item>
-        <item name="colorPrimaryDark">#0958D9</item>
-        <item name="colorAccent">#FF4D4F</item>
-        <item name="android:statusBarColor">#0958D9</item>
-        <item name="android:navigationBarColor">#FFFFFF</item>
-        <item name="android:windowLightStatusBar">true</item>
+        <item name="colorPrimary">#7C5CBF</item>
+        <item name="colorPrimaryDark">#1A0A2E</item>
+        <item name="colorAccent">#D4AF37</item>
+        <!-- 全屏沉浸：透明状态栏和导航栏 -->
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:windowTranslucentStatus">false</item>
+        <item name="android:windowTranslucentNavigation">false</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowLightNavigationBar">false</item>
+        <!-- 内容延伸到系统栏 -->
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
     </style>
 </resources>
