@@ -1,65 +1,182 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="#F5F7FA">
 
-    <!-- 首页 -->
+    <!-- ====== 首页 ====== -->
     <ScrollView
         android:id="@+id/home_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:visibility="visible">
+        android:visibility="visible"
+        android:scrollbars="none">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <TextView
+            <!-- 顶部 Header -->
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="视频权益"
-                android:textSize="22sp"
-                android:textColor="#1677FF"
-                android:textStyle="bold"
-                android:gravity="center"
-                android:padding="24dp" />
+                android:orientation="vertical"
+                android:background="#1677FF"
+                android:paddingTop="48dp"
+                android:paddingBottom="24dp"
+                android:paddingStart="20dp"
+                android:paddingEnd="20dp">
 
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="视频权益"
+                    android:textSize="26sp"
+                    android:textColor="#FFFFFF"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="全网VIP视频免费观看"
+                    android:textSize="13sp"
+                    android:textColor="#91CAFF"
+                    android:layout_marginTop="4dp" />
+            </LinearLayout>
+
+            <!-- 统计卡片 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:padding="12dp"
+                android:layout_marginTop="-12dp">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="72dp"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="6dp"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:background="@drawable/bg_stat_card"
+                    android:elevation="4dp">
+
+                    <TextView
+                        android:id="@+id/stat_platforms"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="13"
+                        android:textSize="22sp"
+                        android:textColor="#1677FF"
+                        android:textStyle="bold" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="视频平台"
+                        android:textSize="11sp"
+                        android:textColor="#999999"
+                        android:layout_marginTop="2dp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="72dp"
+                    android:layout_weight="1"
+                    android:layout_marginStart="6dp"
+                    android:layout_marginEnd="6dp"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:background="@drawable/bg_stat_card"
+                    android:elevation="4dp">
+
+                    <TextView
+                        android:id="@+id/stat_vip"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="10"
+                        android:textSize="22sp"
+                        android:textColor="#52C41A"
+                        android:textStyle="bold" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="解析线路"
+                        android:textSize="11sp"
+                        android:textColor="#999999"
+                        android:layout_marginTop="2dp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="72dp"
+                    android:layout_weight="1"
+                    android:layout_marginStart="6dp"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:background="@drawable/bg_stat_card"
+                    android:elevation="4dp">
+
+                    <TextView
+                        android:id="@+id/stat_music"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="3"
+                        android:textSize="22sp"
+                        android:textColor="#FA8C16"
+                        android:textStyle="bold" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="音乐平台"
+                        android:textSize="11sp"
+                        android:textColor="#999999"
+                        android:layout_marginTop="2dp" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- 平台容器 (动态填充) -->
             <LinearLayout
                 android:id="@+id/platform_container"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="8dp" />
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"
+                android:paddingBottom="24dp" />
         </LinearLayout>
     </ScrollView>
 
-    <!-- 浏览器 -->
+    <!-- ====== 浏览器 ====== -->
     <LinearLayout
         android:id="@+id/browser_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:visibility="gone">
+        android:visibility="gone"
+        android:background="#FFFFFF">
 
-        <!-- 工具栏 -->
+        <!-- 浏览器工具栏 -->
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="48dp"
+            android:layout_height="56dp"
             android:orientation="horizontal"
             android:gravity="center_vertical"
-            android:background="#F5F5F5"
-            android:paddingStart="8dp"
+            android:background="#FFFFFF"
+            android:elevation="2dp"
+            android:paddingStart="4dp"
             android:paddingEnd="8dp">
 
             <TextView
                 android:id="@+id/back_btn"
-                android:layout_width="36dp"
-                android:layout_height="36dp"
-                android:text="✕"
-                android:textSize="18sp"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:text="←"
+                android:textSize="20sp"
                 android:textColor="#333333"
-                android:gravity="center" />
+                android:gravity="center"
+                android:background="?attr/selectableItemBackgroundBorderless" />
 
             <TextView
                 android:id="@+id/title_text"
@@ -69,37 +186,45 @@
                 android:textSize="14sp"
                 android:singleLine="true"
                 android:ellipsize="end"
-                android:paddingStart="8dp"
-                android:paddingEnd="8dp"
-                android:textColor="#333333" />
+                android:textColor="#333333"
+                android:textStyle="bold"
+                android:paddingStart="4dp" />
 
-            <Button
+            <TextView
                 android:id="@+id/vip_btn"
                 android:layout_width="wrap_content"
                 android:layout_height="32dp"
-                android:text="VIP"
+                android:text=" VIP "
                 android:textSize="12sp"
-                android:paddingStart="8dp"
-                android:paddingEnd="8dp"
-                android:layout_marginEnd="4dp" />
+                android:textColor="#FFFFFF"
+                android:gravity="center"
+                android:background="@drawable/bg_vip_btn"
+                android:paddingStart="14dp"
+                android:paddingEnd="14dp"
+                android:layout_marginEnd="8dp" />
 
-            <Button
+            <TextView
                 android:id="@+id/next_btn"
                 android:layout_width="wrap_content"
                 android:layout_height="32dp"
                 android:text="下一条"
                 android:textSize="12sp"
-                android:paddingStart="8dp"
-                android:paddingEnd="8dp" />
+                android:textColor="#1677FF"
+                android:gravity="center"
+                android:background="@drawable/bg_next_btn"
+                android:paddingStart="14dp"
+                android:paddingEnd="14dp" />
         </LinearLayout>
 
         <ProgressBar
             android:id="@+id/progress_bar"
             style="?android:attr/progressBarStyleHorizontal"
             android:layout_width="match_parent"
-            android:layout_height="3dp"
+            android:layout_height="2dp"
             android:max="100"
-            android:progress="0" />
+            android:progress="0"
+            android:progressTint="#1677FF"
+            android:progressBackgroundTint="#E8E8E8" />
 
         <WebView
             android:id="@+id/web_view"

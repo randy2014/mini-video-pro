@@ -1,4 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="Theme.VideoEntitlement" parent="android:Theme.Material.Light.NoActionBar" />
+    <style name="Theme.VideoEntitlement" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">#1677FF</item>
+        <item name="colorPrimaryDark">#0958D9</item>
+        <item name="colorAccent">#FF4D4F</item>
+        <item name="android:statusBarColor">#0958D9</item>
+        <item name="android:navigationBarColor">#FFFFFF</item>
+        <item name="android:windowLightStatusBar">true</item>
+    </style>
 </resources>
