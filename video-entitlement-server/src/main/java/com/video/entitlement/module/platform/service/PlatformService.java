@@ -91,6 +91,7 @@ public class PlatformService {
         List<String> domainList = domainRepo.findByPlatformId(p.getId()).stream()
                 .map(VideoPlatformDomain::getHost).collect(Collectors.toList());
         return VideoPlatformVO.builder()
+                .id(p.getId())
                 .platformCode(p.getPlatformCode())
                 .platformName(p.getPlatformName())
                 .platformType(p.getPlatformType())

@@ -12,6 +12,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class VideoPlatformVO {
+    private Long id;
     private String platformCode;
     private String platformName;
     private String platformType;
