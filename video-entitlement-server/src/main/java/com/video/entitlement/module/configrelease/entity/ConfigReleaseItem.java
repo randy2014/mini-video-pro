@@ -25,8 +25,8 @@ public class ConfigReleaseItem {
     @Column(name = "config_type", nullable = false, length = 32)
     private String configType;
 
-    @Column(name = "business_id", nullable = false, length = 128)
-    private String businessId;
+    @Column(name = "business_id", nullable = false)
+    private Long businessId;
 
     @Column(name = "content_json", columnDefinition = "JSON")
     private String contentJson;

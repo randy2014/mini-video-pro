@@ -117,7 +117,7 @@ public class EntitlementService {
 
         UserEntitlement ue = UserEntitlement.builder()
                 .userId(userId).productId(product.getId())
-                .sourceType(EntitlementSourceType.CODE.getCode()).sourceId(String.valueOf(code.getId()))
+                .sourceType(EntitlementSourceType.CODE.getCode()).sourceId(code.getId())
                 .status(EntitlementCodeStatus.ACTIVATED.getCode())
                 .effectiveAt(effectiveAt).expiresAt(expiresAt).usedTotal(0).build();
         ue = userEntitlementRepo.save(ue);

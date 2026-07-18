@@ -28,8 +28,8 @@ public class UserEntitlement {
     @Column(name = "source_type", nullable = false, length = 32)
     private String sourceType;
 
-    @Column(name = "source_id", length = 64)
-    private String sourceId;
+    @Column(name = "source_id")
+    private Long sourceId;
 
     @Column(nullable = false, length = 32)
     @Builder.Default
