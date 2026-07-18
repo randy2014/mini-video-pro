@@ -17,16 +17,13 @@ import org.json.JSONObject
 import java.net.HttpURLConnection
 import java.net.URL
 
-data class Platform(val name: String, val url: String, val type: String, val icon: String)
-data class VipApi(val name: String, val url: String)
+data class Platform(val name: String, val url: String, val type: String, val code: String)
 
 class MainActivity : AppCompatActivity() {
 
     private var webView: WebView? = null
     private var titleText: TextView? = null
     private var progressBar: ProgressBar? = null
-    private var vipBtn: TextView? = null
-    private var nextBtn: TextView? = null
     private var playBtn: TextView? = null
     private var backBtn: TextView? = null
     private var homeContainer: View? = null
@@ -38,47 +35,23 @@ class MainActivity : AppCompatActivity() {
 
     private var currentUrl = ""
     private var currentTitle = ""
-    private var vipApis = mutableListOf<VipApi>()
-    private var currentVipIdx = -1
-    private var usingVip = false
-    private var originalUrl = ""
 
     private val dp1 get() = resources.displayMetrics.density
     private val API_BASE = "http://43.161.222.78:8081"
 
-    // 平台图标映射 (后端返回platformCode对应图标)
-    private val platformIcons = mapOf(
-        "iqiyi" to "\uD83D\uDFE2", "tencent" to "\uD83D\uDD35", "mgtv" to "\uD83D\uDFE0",
-        "bilibili" to "\uD83D\uDFE3", "youku" to "\uD83D\uDD34",
-        "1905" to "\uD83C\uDFAC", "ixigua" to "\uD83C\uDF49", "wangyiyun" to "\uD83D\uDD34\u26AA",
-        "qqmusic" to "\uD83C\uDFB5", "kugou" to "\uD83C\uDFB6", "cctv" to "\uD83D\uDCFA",
-        "meiju" to "\uD83C\uDDFA\uD83C\uDDF8", "hanju" to "\uD83C\uDDF0\uD83C\uDDF7"
-    )
-
-    // VIP解析源 (后端没接口，保留本地默认)
-    private val defaultVipApis = listOf(
-        VipApi("线路1", "https://jx.m3u8.tv/jiexi/?url="),
-        VipApi("线路2", "https://jx.xmflv.com/?url="),
-        VipApi("线路3", "https://jx.aidouer.net/?url="),
-        VipApi("线路4", "https://jx.bozrc.com:4433/player/?url="),
-        VipApi("线路5", "https://jx.jsonplayer.com/player/?url="),
-        VipApi("线路6", "https://jx.mm58.top/jx/api.php?url="),
-        VipApi("线路7", "https://www.yemu.xyz/?url="),
-        VipApi("线路8", "https://jx.nnxv.cn/tv.php?url="),
-        VipApi("线路9", "https://vip.ffzy-play6.com/?url="),
-        VipApi("线路10", "https://jx.playerjy.com/?url="),
+    // 品牌色映射
+    private val brandColors = mapOf(
+        "iqiyi" to 0xFF1FB47C.toInt(), "tencent" to 0xFFFF7028.toInt(),
+        "mgtv" to 0xFFFFB617.toInt(), "bilibili" to 0xFFFB7299.toInt(),
+        "youku" to 0xFF1991EA.toInt(), "1905" to 0xFF1565C0.toInt(),
+        "ixigua" to 0xFFFF3B30.toInt(), "wangyiyun" to 0xFFEC4141.toInt(),
+        "qqmusic" to 0xFF31C27C.toInt(), "kugou" to 0xFFFFA810.toInt(),
+        "cctv" to 0xFFC62828.toInt(), "meiju" to 0xFFFF5722.toInt(),
+        "hanju" to 0xFF9C27B0.toInt()
     )
 
     private val typeLabels = mapOf(
         "video" to "视频网站", "music" to "音乐平台", "tv" to "电视直播", "drama" to "影视剧"
-    )
-    private val typeColors = mapOf(
-        "video" to 0xFF1677FF.toInt(), "music" to 0xFF52C41A.toInt(),
-        "tv" to 0xFFFA8C16.toInt(), "drama" to 0xFF722ED1.toInt()
-    )
-    private val typeBgColors = mapOf(
-        "video" to 0xFFE6F0FF.toInt(), "music" to 0xFFF0FFE6.toInt(),
-        "tv" to 0xFFFFF5E6.toInt(), "drama" to 0xFFF5E6FF.toInt()
     )
 
     @SuppressLint("SetJavaScriptEnabled")
@@ -88,8 +61,6 @@ class MainActivity : AppCompatActivity() {
             setContentView(R.layout.activity_main)
             initViews()
             setupWebView()
-            loadVipApis()
-            // 从 API 加载平台数据 (无硬编码)
             fetchPlatforms()
         } catch (e: Exception) {
             showError("启动失败: ${e.message}")
@@ -101,8 +72,6 @@ class MainActivity : AppCompatActivity() {
         browserContainer = findViewById(R.id.browser_container)
         titleText = findViewById(R.id.title_text)
         progressBar = findViewById(R.id.progress_bar)
-        vipBtn = findViewById(R.id.vip_btn)
-        nextBtn = findViewById(R.id.next_btn)
         playBtn = findViewById(R.id.play_btn)
         backBtn = findViewById(R.id.back_btn)
         platformContainer = findViewById(R.id.platform_container)
@@ -111,22 +80,11 @@ class MainActivity : AppCompatActivity() {
         loadingOverlay = findViewById(R.id.loading_overlay)
         loadingText = findViewById(R.id.loading_text)
 
-        // 下拉刷新
         swipeRefresh?.setOnRefreshListener { fetchPlatforms() }
-        swipeRefresh?.setColorSchemeColors(0xFF1677FF.toInt())
+        swipeRefresh?.setColorSchemeColors(0xFF7C5CBF.toInt())
 
         backBtn?.setOnClickListener {
             if (browserContainer?.visibility == View.VISIBLE) showHome()
-        }
-        vipBtn?.setOnClickListener {
-            if (vipApis.isEmpty()) { toast("没有解析线路"); return@setOnClickListener }
-            if (currentVipIdx < 0) currentVipIdx = 0
-            applyVipApi()
-        }
-        nextBtn?.setOnClickListener {
-            if (vipApis.isEmpty()) return@setOnClickListener
-            currentVipIdx = (currentVipIdx + 1) % vipApis.size
-            applyVipApi()
         }
         playBtn?.setOnClickListener { openInPlayer() }
     }
@@ -140,8 +98,7 @@ class MainActivity : AppCompatActivity() {
                 javaScriptEnabled = true; domStorageEnabled = true
                 mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
                 useWideViewPort = true; loadWithOverviewMode = true
-                setSupportZoom(true); builtInZoomControls = true
-                displayZoomControls = false
+                setSupportZoom(true); builtInZoomControls = true; displayZoomControls = false
                 allowFileAccess = true; allowContentAccess = true
                 cacheMode = WebSettings.LOAD_DEFAULT
                 userAgentString = "Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.6099.144 Mobile Safari/537.36"
@@ -153,37 +110,36 @@ class MainActivity : AppCompatActivity() {
                 }
                 override fun onPageFinished(view: WebView?, url: String?) {
                     progressBar?.visibility = View.GONE
-                    if (url != null && !usingVip) originalUrl = url
-                    if (!usingVip) titleText?.text = view?.title ?: currentTitle
+                    titleText?.text = view?.title ?: currentTitle
                 }
-                override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?) = false
-                override fun onReceivedError(view: WebView?, request: WebResourceRequest?, error: WebResourceError?) {
+                override fun shouldOverrideUrlLoading(v: WebView?, r: WebResourceRequest?) = false
+                override fun onReceivedError(v: WebView?, r: WebResourceRequest?, e: WebResourceError?) {
                     progressBar?.visibility = View.GONE
-                    titleText?.text = "\u26A0 ${error?.description ?: "加载失败"}"
+                    titleText?.text = "\u26A0 ${e?.description ?: "加载失败"}"
                 }
             }
             wv.webChromeClient = object : WebChromeClient() {
                 override fun onReceivedTitle(view: WebView?, title: String?) {
-                    if (title != null && !usingVip) titleText?.text = title
+                    if (title != null) titleText?.text = title
                 }
                 override fun onProgressChanged(view: WebView?, p: Int) {
                     progressBar?.progress = p
                     if (p == 100) progressBar?.visibility = View.GONE
                 }
-                override fun onShowCustomView(view: View?, callback: CustomViewCallback?) {
-                    callback?.onCustomViewHidden()
+                override fun onShowCustomView(view: View?, cb: CustomViewCallback?) {
+                    cb?.onCustomViewHidden()
                     playBtn?.visibility = View.VISIBLE
                 }
             }
         } catch (_: Exception) { }
     }
 
-    // ====== 从 API 加载平台数据 ======
+    // ====== API 平台加载 ======
     private fun fetchPlatforms() {
         showLoading(true)
         Thread {
             var platforms: List<Platform> = emptyList()
-            var success = false
+            var ok = false
             try {
                 val conn = URL("$API_BASE/api/v1/client/platforms").openConnection() as HttpURLConnection
                 conn.connectTimeout = 10000; conn.readTimeout = 10000
@@ -194,21 +150,17 @@ class MainActivity : AppCompatActivity() {
                     for (i in 0 until data.length()) {
                         val p = data.getJSONObject(i)
                         val code = p.getString("platformCode")
-                        val icon = platformIcons[code] ?: "\uD83D\uDCF1"
-                        list.add(Platform(p.getString("platformName"), p.getString("homeUrl"), guessType(code), icon))
+                        list.add(Platform(p.getString("platformName"), p.getString("homeUrl"), guessType(code), code))
                     }
-                    platforms = list
-                    success = true
+                    platforms = list; ok = true
                 }
                 conn.disconnect()
-            } catch (e: Exception) {
-                platforms = emptyList()
-            }
+            } catch (_: Exception) { }
 
             runOnUiThread {
                 showLoading(false)
                 swipeRefresh?.isRefreshing = false
-                if (success && platforms.isNotEmpty()) {
+                if (ok && platforms.isNotEmpty()) {
                     renderPlatforms(platformContainer!!, platforms)
                     updateStats(platforms)
                 } else {
@@ -220,20 +172,14 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun showLoading(show: Boolean) {
-        if (show) {
-            loadingOverlay?.visibility = View.VISIBLE
-            loadingText?.text = "加载中..."
-        } else {
-            loadingOverlay?.visibility = View.GONE
-        }
+        loadingOverlay?.visibility = if (show) View.VISIBLE else View.GONE
+        if (show) loadingText?.text = "加载中..."
     }
 
     private fun updateStats(platforms: List<Platform>) {
-        val vc = platforms.count { it.type == "video" }
-        val mc = platforms.count { it.type == "music" }
-        findViewById<TextView>(R.id.stat_platforms)?.text = "$vc"
-        findViewById<TextView>(R.id.stat_vip)?.text = "${vipApis.size}"
-        findViewById<TextView>(R.id.stat_music)?.text = "$mc"
+        findViewById<TextView>(R.id.stat_platforms)?.text = "${platforms.count { it.type == "video" }}"
+        findViewById<TextView>(R.id.stat_music)?.text = "${platforms.count { it.type == "music" }}"
+        findViewById<TextView>(R.id.stat_tv)?.text = "${platforms.count { it.type == "tv" }}"
     }
 
     private fun guessType(code: String): String = when {
@@ -243,29 +189,7 @@ class MainActivity : AppCompatActivity() {
         else -> "video"
     }
 
-    // ====== VIP加载 ======
-    private fun loadVipApis() {
-        Thread {
-            try {
-                val conn = URL("https://iodefog.github.io/text/viplist.json").openConnection() as HttpURLConnection
-                conn.connectTimeout = 8000; conn.readTimeout = 8000
-                val json = JSONObject(conn.inputStream.reader().readText())
-                val vips = json.optJSONArray("vips")
-                if (vips != null && vips.length() > 0) {
-                    vipApis.clear()
-                    for (i in 0 until vips.length()) {
-                        val item = vips.getJSONObject(i)
-                        vipApis.add(VipApi(item.getString("name"), item.getString("url")))
-                    }
-                }
-                conn.disconnect()
-            } catch (_: Exception) { }
-            if (vipApis.isEmpty()) vipApis.addAll(defaultVipApis)
-            runOnUiThread { vipBtn?.text = "VIP\u00B7${vipApis.size}" }
-        }.start()
-    }
-
-    // ====== UI构建 ======
+    // ====== UI 构建 ======
     private fun renderPlatforms(container: LinearLayout, platforms: List<Platform>) {
         try {
             container.removeAllViews()
@@ -273,20 +197,31 @@ class MainActivity : AppCompatActivity() {
                 val group = platforms.filter { it.type == type }
                 if (group.isEmpty()) continue
                 container.addView(buildSectionHeader(label))
-                container.addView(buildCardGrid(group, type))
+                container.addView(buildCardGrid(group))
             }
-        } catch (e: Exception) { }
+        } catch (_: Exception) { }
     }
 
-    private fun buildSectionHeader(label: String): TextView {
-        return TextView(this).apply {
-            text = label; setPadding(0, dp(20), 0, dp(10))
-            textSize = 15f; setTypeface(null, Typeface.BOLD)
-            setTextColor(0xFF333333.toInt())
+    private fun buildSectionHeader(label: String): View {
+        val row = LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL
+            setPadding(0, dp(24), 0, dp(14))
         }
+        val dot = View(this).apply {
+            layoutParams = LinearLayout.LayoutParams(dp(6), dp(6)).apply { marginEnd = dp(8) }
+            background = GradientDrawable().apply {
+                setColor(0xFFD4AF37.toInt()); shape = GradientDrawable.OVAL
+            }
+        }
+        val tv = TextView(this).apply {
+            text = label; textSize = 15f; setTypeface(null, Typeface.BOLD)
+            setTextColor(0xFFD4AF37.toInt())
+        }
+        row.addView(dot); row.addView(tv)
+        return row
     }
 
-    private fun buildCardGrid(platforms: List<Platform>, type: String): LinearLayout {
+    private fun buildCardGrid(platforms: List<Platform>): LinearLayout {
         val grid = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             layoutParams = LinearLayout.LayoutParams(MATCH, WRAP)
@@ -300,44 +235,69 @@ class MainActivity : AppCompatActivity() {
                 }
                 grid.addView(row)
             }
-            val card = buildPlatformCard(p, type)
+            val card = buildPlatformCard(p)
             val lp = LinearLayout.LayoutParams(0, WRAP, 1f)
-            lp.setMargins(if (i % 2 == 0) 0 else dp(5), 0, if (i % 2 == 0) dp(5) else 0, dp(10))
+            val isLeft = i % 2 == 0
+            lp.setMargins(if (isLeft) 0 else dp(5), 0, if (isLeft) dp(5) else 0, dp(10))
             row?.addView(card, lp)
         }
         return grid
     }
 
-    private fun buildPlatformCard(p: Platform, type: String): LinearLayout {
-        val bgColor = typeColors[type] ?: 0xFF1677FF.toInt()
-        val bgLight = typeBgColors[type] ?: 0xFFE6F0FF.toInt()
+    private fun buildPlatformCard(p: Platform): LinearLayout {
+        val brand = brandColors[p.code] ?: 0xFF7C5CBF.toInt()
         val card = LinearLayout(this).apply {
-            orientation = LinearLayout.VERTICAL; setPadding(dp(14), dp(16), dp(14), dp(16))
-            gravity = Gravity.CENTER; setBackgroundColor(0xFFFFFFFF.toInt())
-            elevation = dp(1).toFloat(); clipToPadding = false
+            orientation = LinearLayout.VERTICAL; gravity = Gravity.CENTER
+            setPadding(dp(20), dp(22), dp(20), dp(22))
             background = GradientDrawable().apply {
-                setColor(0xFFFFFFFF.toInt()); cornerRadius = dp(12).toFloat(); setStroke(1, bgLight)
+                setColor(0xFF1E1035.toInt()); cornerRadius = dp(16).toFloat()
+                setStroke(1, 0x22D4AF37)
             }
             setOnClickListener { openPlatform(p) }
         }
-        val iconBg = GradientDrawable().apply { setColor(bgLight); shape = GradientDrawable.OVAL }
-        val icon = TextView(this).apply {
-            text = p.icon; textSize = 24f; gravity = Gravity.CENTER
-            layoutParams = LinearLayout.LayoutParams(dp(48), dp(48)).apply { bottomMargin = dp(10) }
-            background = iconBg
+
+        // 顶部三点装饰
+        val dots = LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.CENTER
+            layoutParams = LinearLayout.LayoutParams(WRAP, WRAP).apply { bottomMargin = dp(14) }
         }
+        for (j in 0..2) {
+            dots.addView(View(this).apply {
+                val s = if (j == 0) dp(4) else dp(3)
+                layoutParams = LinearLayout.LayoutParams(s, s).apply {
+                    marginEnd = if (j < 2) dp(3) else 0
+                }
+                background = GradientDrawable().apply {
+                    setColor(if (j == 0) brand else 0x66D4AF37); shape = GradientDrawable.OVAL
+                }
+            })
+        }
+
+        // 品牌色圆点
+        val circle = View(this).apply {
+            layoutParams = LinearLayout.LayoutParams(dp(28), dp(28)).apply { bottomMargin = dp(12) }
+            background = GradientDrawable().apply { setColor(brand); shape = GradientDrawable.OVAL }
+        }
+
+        // 名称
         val name = TextView(this).apply {
-            text = p.name; textSize = 13f; setTextColor(0xFF333333.toInt())
+            text = p.name; textSize = 13f; setTextColor(0xFFF0E8FF.toInt())
             setTypeface(null, Typeface.BOLD); gravity = Gravity.CENTER; maxLines = 1
             ellipsize = android.text.TextUtils.TruncateAt.END
         }
+
+        // 标签
         val tag = TextView(this).apply {
-            text = typeLabels[type] ?: ""; textSize = 10f; setTextColor(bgColor)
-            setPadding(dp(8), dp(2), dp(8), dp(2))
-            layoutParams = LinearLayout.LayoutParams(WRAP, WRAP).apply { topMargin = dp(6) }
-            background = GradientDrawable().apply { setColor(bgLight); cornerRadius = dp(8).toFloat() }
+            text = typeLabels[p.type] ?: ""; textSize = 10f; setTextColor(0xFFD4AF37.toInt())
+            setPadding(dp(8), dp(3), dp(8), dp(3))
+            layoutParams = LinearLayout.LayoutParams(WRAP, WRAP).apply { topMargin = dp(8) }
+            background = GradientDrawable().apply {
+                setColor(0x18D4AF37); cornerRadius = dp(8).toFloat()
+            }
         }
-        card.addView(icon); card.addView(name); card.addView(tag)
+
+        card.addView(dots); card.addView(circle); card.addView(name); card.addView(tag)
         return card
     }
 
@@ -347,8 +307,7 @@ class MainActivity : AppCompatActivity() {
             browserContainer?.visibility = View.VISIBLE
             backBtn?.visibility = View.VISIBLE
             currentTitle = p.name; titleText?.text = p.name
-            currentVipIdx = -1; usingVip = false
-            originalUrl = p.url; webView?.loadUrl(p.url)
+            webView?.loadUrl(p.url)
         } catch (_: Exception) { }
     }
 
@@ -357,37 +316,24 @@ class MainActivity : AppCompatActivity() {
             browserContainer?.visibility = View.GONE
             homeContainer?.visibility = View.VISIBLE
             webView?.stopLoading(); webView?.loadUrl("about:blank")
-            currentVipIdx = -1; usingVip = false
-        } catch (_: Exception) { }
-    }
-
-    private fun applyVipApi() {
-        if (vipApis.isEmpty() || currentVipIdx < 0) return
-        try {
-            val api = vipApis[currentVipIdx]
-            val target = originalUrl.ifEmpty { currentUrl }
-            usingVip = true
-            titleText?.text = "${api.name} (${currentVipIdx + 1}/${vipApis.size})"
-            vipBtn?.text = "VIP\u00B7${currentVipIdx + 1}"
-            webView?.loadUrl(api.url + target)
-            toast(api.name)
         } catch (_: Exception) { }
     }
 
     private fun openInPlayer() {
         try {
-            val url = currentUrl.ifEmpty { originalUrl }
-            if (url.isBlank() || url == "about:blank") { toast("没有可播放的地址"); return }
+            val url = currentUrl.ifEmpty { return }
+            if (url == "about:blank") { toast("没有可播放的地址"); return }
             startActivity(Intent(this, VideoPlayerActivity::class.java).apply {
-                putExtra("url", url)
-                putExtra("title", titleText?.text?.toString() ?: "视频播放")
+                putExtra("url", url); putExtra("title", titleText?.text?.toString() ?: "播放")
             })
         } catch (_: Exception) { }
     }
 
     private fun showError(msg: String) {
         setContentView(TextView(this).apply {
-            text = msg; setPadding(32, 32, 32, 32); textSize = 16f; setTextColor(0xFFFF0000.toInt())
+            text = msg; setPadding(32, 32, 32, 32)
+            textSize = 16f; setTextColor(0xFFE94560.toInt())
+            setBackgroundColor(0xFF1A0A2E.toInt())
         })
     }
 
