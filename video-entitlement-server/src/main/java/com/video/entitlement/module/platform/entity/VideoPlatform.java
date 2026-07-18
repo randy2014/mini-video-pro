@@ -25,6 +25,10 @@ public class VideoPlatform {
     @Column(name = "platform_name", nullable = false, length = 128)
     private String platformName;
 
+    @Column(name = "platform_type", length = 32)
+    @Builder.Default
+    private String platformType = "video";
+
     @Column(name = "home_url", length = 512)
     private String homeUrl;
 

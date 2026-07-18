@@ -1,18 +1,30 @@
 import { useEffect, useState } from 'react';
-import { Card, Table, Button, Modal, Form, Input, Select, InputNumber, Space, Tag, App } from 'antd';
-import { PlusOutlined, LinkOutlined } from '@ant-design/icons';
-import { getPlatforms, createPlatform, addDomain, addRule } from '../../services/platform';
+import { Card, Table, Button, Modal, Form, Input, Select, Space, Tag, App, Popconfirm } from 'antd';
+import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
+import { getPlatforms, createPlatform, updatePlatform, deletePlatform } from '../../services/platform';
 import type { VideoPlatform } from '../../types/api';
+
+const platformTypes = [
+  { label: '视频网站', value: 'video' },
+  { label: '音乐平台', value: 'music' },
+  { label: '电视直播', value: 'tv' },
+  { label: '影视剧', value: 'drama' },
+];
+
+const typeTagColors: Record<string, string> = {
+  video: 'blue', music: 'green', tv: 'orange', drama: 'purple',
+};
+
+const typeLabels: Record<string, string> = {
+  video: '视频网站', music: '音乐平台', tv: '电视直播', drama: '影视剧',
+};
 
 export default function PlatformManage() {
   const [data, setData] = useState<VideoPlatform[]>([]);
   const [loading, setLoading] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
-  const [domainModal, setDomainModal] = useState<{ open: boolean; platformId: number }>({ open: false, platformId: 0 });
-  const [ruleModal, setRuleModal] = useState<{ open: boolean; platformId: number }>({ open: false, platformId: 0 });
+  const [editingId, setEditingId] = useState<number | null>(null);
   const [form] = Form.useForm();
-  const [domainForm] = Form.useForm();
-  const [ruleForm] = Form.useForm();
   const { message } = App.useApp();
 
   const fetchData = async () => {
@@ -21,65 +33,81 @@ export default function PlatformManage() {
   };
   useEffect(() => { fetchData(); }, []);
 
-  const handleCreate = async (values: any) => {
-    await createPlatform({ ...values, domains: values.domains ? [values.domains] : [] });
-    message.success('平台创建成功');
-    setModalOpen(false); form.resetFields(); fetchData();
+  const handleSubmit = async (values: any) => {
+    const req = { ...values, platformType: values.platformType || 'video' };
+    if (editingId) {
+      await updatePlatform(editingId, req);
+      message.success('平台更新成功');
+    } else {
+      await createPlatform(req);
+      message.success('平台创建成功');
+    }
+    setModalOpen(false); setEditingId(null); form.resetFields(); fetchData();
   };
 
-  const handleAddDomain = async (values: { host: string }) => {
-    await addDomain(domainModal.platformId, values.host);
-    message.success('域名添加成功');
-    setDomainModal({ open: false, platformId: 0 }); domainForm.resetFields();
+  const handleEdit = (record: VideoPlatform) => {
+    setEditingId(record.id);
+    form.setFieldsValue(record);
+    setModalOpen(true);
   };
 
-  const handleAddRule = async (values: { ruleType: string; pattern: string; priority: number }) => {
-    await addRule(ruleModal.platformId, values);
-    message.success('规则添加成功');
-    setRuleModal({ open: false, platformId: 0 }); ruleForm.resetFields();
+  const handleDelete = async (id: number) => {
+    await deletePlatform(id);
+    message.success('平台已删除');
+    fetchData();
   };
 
   const columns = [
-    { title: '平台编码', dataIndex: 'platformCode', key: 'platformCode' },
-    { title: '平台名称', dataIndex: 'platformName', key: 'platformName' },
+    { title: '平台编码', dataIndex: 'platformCode', key: 'platformCode', width: 100 },
+    { title: '平台名称', dataIndex: 'platformName', key: 'platformName', width: 120 },
+    {
+      title: '类型', dataIndex: 'platformType', key: 'platformType', width: 100,
+      render: (v: string) => <Tag color={typeTagColors[v] || 'default'}>{typeLabels[v] || v || '视频网站'}</Tag>,
+    },
     { title: '首页URL', dataIndex: 'homeUrl', key: 'homeUrl', ellipsis: true },
-    { title: '状态', dataIndex: 'status', key: 'status', render: (v: string) => (
-      <Tag color={v === 'ACTIVE' ? 'green' : 'orange'}>{v === 'ACTIVE' ? '正常' : v}</Tag>
-    )},
-    { title: '操作', key: 'actions', render: (_: any, record: VideoPlatform) => (
-      <Space>
-        <Button size="small" icon={<LinkOutlined />} onClick={() => setDomainModal({ open: true, platformId: record.id })}>域名</Button>
-        <Button size="small" onClick={() => setRuleModal({ open: true, platformId: record.id })}>规则</Button>
-      </Space>
-    )},
+    {
+      title: '状态', dataIndex: 'status', key: 'status', width: 80,
+      render: (v: string) => <Tag color={v === 'ACTIVE' ? 'green' : 'orange'}>{v === 'ACTIVE' ? '正常' : v}</Tag>,
+    },
+    {
+      title: '操作', key: 'actions', width: 160,
+      render: (_: any, record: VideoPlatform) => (
+        <Space>
+          <Button size="small" icon={<EditOutlined />} onClick={() => handleEdit(record)}>编辑</Button>
+          <Popconfirm title="确定删除此平台？" onConfirm={() => handleDelete(record.id)} okText="删除" cancelText="取消">
+            <Button size="small" danger icon={<DeleteOutlined />}>删除</Button>
+          </Popconfirm>
+        </Space>
+      ),
+    },
   ];
 
   return (
-    <Card title="平台管理" extra={<Button type="primary" icon={<PlusOutlined />} onClick={() => setModalOpen(true)}>新建平台</Button>}>
+    <Card title="平台管理" extra={
+      <Button type="primary" icon={<PlusOutlined />} onClick={() => { setEditingId(null); form.resetFields(); setModalOpen(true); }}>
+        新建平台
+      </Button>
+    }>
       <Table columns={columns} dataSource={data} rowKey="id" loading={loading} pagination={false} />
 
-      <Modal title="新建平台" open={modalOpen} onCancel={() => setModalOpen(false)} onOk={() => form.submit()}>
-        <Form form={form} layout="vertical" onFinish={handleCreate}>
-          <Form.Item name="platformCode" label="平台编码" rules={[{ required: true }]}><Input /></Form.Item>
-          <Form.Item name="platformName" label="平台名称" rules={[{ required: true }]}><Input /></Form.Item>
-          <Form.Item name="homeUrl" label="首页URL" rules={[{ required: true }, { type: 'url' }]}><Input /></Form.Item>
-          <Form.Item name="domains" label="域名"><Input placeholder="example.com" /></Form.Item>
-        </Form>
-      </Modal>
-
-      <Modal title="添加域名" open={domainModal.open} onCancel={() => setDomainModal({ open: false, platformId: 0 })} onOk={() => domainForm.submit()}>
-        <Form form={domainForm} layout="vertical" onFinish={handleAddDomain}>
-          <Form.Item name="host" label="域名" rules={[{ required: true }]}><Input placeholder="v.qq.com" /></Form.Item>
-        </Form>
-      </Modal>
-
-      <Modal title="添加URL规则" open={ruleModal.open} onCancel={() => setRuleModal({ open: false, platformId: 0 })} onOk={() => ruleForm.submit()}>
-        <Form form={ruleForm} layout="vertical" onFinish={handleAddRule}>
-          <Form.Item name="ruleType" label="规则类型" rules={[{ required: true }]}>
-            <Select options={[{ label: '正则表达式', value: 'REGEX' }, { label: '前缀匹配', value: 'PREFIX' }, { label: '域名路径', value: 'HOST_PATH' }]} />
+      <Modal title={editingId ? '编辑平台' : '新建平台'} open={modalOpen} onCancel={() => { setModalOpen(false); setEditingId(null); }}
+        onOk={() => form.submit()} destroyOnClose>
+        <Form form={form} layout="vertical" onFinish={handleSubmit}>
+          <Form.Item name="platformCode" label="平台编码" rules={[{ required: true }]}>
+            <Input disabled={!!editingId} />
           </Form.Item>
-          <Form.Item name="pattern" label="匹配模式" rules={[{ required: true }]}><Input placeholder="https://v.qq.com/x/.*" /></Form.Item>
-          <Form.Item name="priority" label="优先级"><InputNumber min={0} defaultValue={0} /></Form.Item>
+          <Form.Item name="platformName" label="平台名称" rules={[{ required: true }]}>
+            <Input />
+          </Form.Item>
+          <Form.Item name="platformType" label="平台类型" rules={[{ required: true }]} initialValue="video">
+            <Select options={platformTypes} />
+          </Form.Item>
+          <Form.Item name="homeUrl" label="首页URL" rules={[{ required: true }, { type: 'url' }]}>
+            <Input />
+          </Form.Item>
+          <Form.Item name="domains" label="域名（逗号分隔）">
+            <Input placeholder="example.com, www.example.com" />
+          </Form.Item>
         </Form>
       </Modal>
     </Card>

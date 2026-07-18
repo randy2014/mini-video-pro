@@ -16,18 +16,6 @@ public enum ErrorCode {
     // 设备
     DEVICE_BLOCKED(3001, "设备已封禁"),
 
-    // 权益
-    ENTITLEMENT_NOT_FOUND(4001, "没有可用权益"),
-    ENTITLEMENT_NOT_EFFECTIVE(4002, "权益尚未生效"),
-    ENTITLEMENT_EXPIRED(4003, "权益已过期"),
-    ENTITLEMENT_SUSPENDED(4004, "权益已暂停"),
-    ENTITLEMENT_DEVICE_LIMIT(4005, "设备数量超限"),
-    ENTITLEMENT_DAILY_LIMIT(4006, "每日使用次数已达上限"),
-    ENTITLEMENT_TOTAL_LIMIT(4007, "总使用次数已达上限"),
-    ENTITLEMENT_CODE_INVALID(4008, "权益码无效"),
-    ENTITLEMENT_CODE_USED(4009, "权益码已使用"),
-    BATCH_STATUS_INVALID(4010, "批次状态不允许此操作"),
-
     // 平台
     PLATFORM_NOT_SUPPORTED(5001, "不支持该平台"),
     PLATFORM_DISABLED(5002, "平台已停用"),
@@ -37,14 +25,6 @@ public enum ErrorCode {
     URL_INVALID(6001, "URL格式非法"),
     URL_HOST_NOT_ALLOWED(6002, "目标域名不在白名单"),
     URL_RULE_NOT_MATCHED(6003, "URL不符合内容规则"),
-
-    // 播放
-    PLAYBACK_RULE_NOT_FOUND(7001, "未找到路由规则"),
-    PLAYBACK_ROUTE_NOT_FOUND(7002, "未配置播放链路"),
-    PLAYBACK_ROUTE_UNAVAILABLE(7003, "当前无可用播放链路"),
-    PLAYBACK_MAX_ATTEMPTS(7004, "已达到最大尝试次数"),
-    PLAYBACK_REQUEST_NOT_FOUND(7005, "播放请求不存在"),
-    PLAYBACK_REPORT_DUPLICATED(7006, "播放结果重复上报"),
 
     // 配置
     CONFIG_VERSION_INVALID(8001, "配置版本无效"),
@@ -64,11 +44,7 @@ public enum ErrorCode {
     // 管理员
     ADMIN_FORBIDDEN(11001, "权限不足"),
     EXPORT_NOT_ALLOWED(11002, "不允许导出"),
-    RULE_CONFLICT(11003, "规则冲突"),
-
-    // 供应商
-    AUTHORIZATION_NOT_VERIFIED(12001, "授权未验证"),
-    AUTHORIZATION_EXPIRED(12002, "授权已到期");
+    RULE_CONFLICT(11003, "规则冲突");
 
     private final int code;
     private final String message;

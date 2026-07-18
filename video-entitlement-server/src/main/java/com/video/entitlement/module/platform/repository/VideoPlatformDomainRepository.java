@@ -2,6 +2,7 @@ package com.video.entitlement.module.platform.repository;
 
 import com.video.entitlement.module.platform.entity.VideoPlatformDomain;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -13,4 +14,7 @@ public interface VideoPlatformDomainRepository extends JpaRepository<VideoPlatfo
     List<VideoPlatformDomain> findByPlatformId(Long platformId);
 
     Optional<VideoPlatformDomain> findByPlatformIdAndHost(Long platformId, String host);
+
+    @Modifying
+    void deleteByPlatformId(Long platformId);
 }

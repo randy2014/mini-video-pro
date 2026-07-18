@@ -61,9 +61,8 @@ public class GlobalExceptionHandler {
             case 1 -> HttpStatus.UNAUTHORIZED;
             case 2, 3, 4, 11, 12 -> HttpStatus.FORBIDDEN;
             case 6, 7, 8, 9 -> {
-                if (code == ErrorCode.RATE_LIMITED.getCode() || code == ErrorCode.ENTITLEMENT_DAILY_LIMIT.getCode()
-                    || code == ErrorCode.PLAYBACK_REPORT_DUPLICATED.getCode() || code == ErrorCode.PLAYBACK_MAX_ATTEMPTS.getCode()
-                    || code == ErrorCode.ENTITLEMENT_CODE_USED.getCode() || code == ErrorCode.INVALID_STATUS_TRANSITION.getCode()
+                if (code == ErrorCode.RATE_LIMITED.getCode()
+                    || code == ErrorCode.INVALID_STATUS_TRANSITION.getCode()
                     || code == ErrorCode.CONFIG_VERSION_INVALID.getCode()) {
                     yield HttpStatus.CONFLICT;
                 }

@@ -12,3 +12,9 @@ export const addDomain = (platformId: number, host: string) =>
 
 export const addRule = (platformId: number, data: { ruleType: string; pattern: string; priority: number }) =>
   request.post<ApiResponse<void>>(`/admin/api/v1/platform/${platformId}/rules`, null, { params: data }).then(r => r.data.data);
+
+export const updatePlatform = (id: number, data: PlatformConfigRequest) =>
+  request.put<ApiResponse<VideoPlatform>>(`/admin/api/v1/platform/${id}`, data).then(r => r.data.data);
+
+export const deletePlatform = (id: number) =>
+  request.delete<ApiResponse<void>>(`/admin/api/v1/platform/${id}`).then(r => r.data.data);

@@ -14,6 +14,7 @@ import java.util.List;
 public class VideoPlatformVO {
     private String platformCode;
     private String platformName;
+    private String platformType;
     private String homeUrl;
     private String status;
     private List<String> domains;

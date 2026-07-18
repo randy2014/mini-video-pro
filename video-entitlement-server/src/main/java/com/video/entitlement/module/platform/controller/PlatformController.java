@@ -1,12 +1,10 @@
 package com.video.entitlement.module.platform.controller;
 
 import com.video.entitlement.common.response.ApiResponse;
-import com.video.entitlement.module.platform.dto.*;
+import com.video.entitlement.module.platform.dto.VideoPlatformVO;
 import com.video.entitlement.module.platform.service.PlatformService;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,12 +21,5 @@ public class PlatformController {
     @GetMapping("/platforms")
     public ApiResponse<List<VideoPlatformVO>> getPlatforms() {
         return ApiResponse.success(platformService.getActivePlatforms());
-    }
-
-    @Operation(summary = "URL标准化和识别")
-    @SecurityRequirement(name = "Bearer")
-    @PostMapping("/url/standardize")
-    public ApiResponse<UrlStandardizeResponse> standardizeUrl(@Valid @RequestBody UrlStandardizeRequest request) {
-        return ApiResponse.success(platformService.standardizeUrl(request));
     }
 }

@@ -1,9 +1,8 @@
 package com.video.entitlement.module.stats.controller;
 
 import com.video.entitlement.common.response.ApiResponse;
-import com.video.entitlement.module.entitlement.repository.*;
-import com.video.entitlement.module.playback.repository.*;
-import com.video.entitlement.module.user.repository.*;
+import com.video.entitlement.module.platform.repository.VideoPlatformRepository;
+import com.video.entitlement.module.user.repository.UserAccountRepository;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -19,18 +18,14 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class StatsController {
     private final UserAccountRepository userRepo;
-    private final EntitlementCodeBatchRepository batchRepo;
-    private final PlaybackRequestRepository requestRepo;
-    private final UserEntitlementRepository userEntitlementRepo;
+    private final VideoPlatformRepository platformRepo;
 
     @Operation(summary = "核心统计")
     @GetMapping("/summary")
     public ApiResponse<Map<String, Object>> summary() {
         return ApiResponse.success(Map.of(
                 "totalUsers", userRepo.count(),
-                "totalBatches", batchRepo.count(),
-                "totalPlaybackRequests", requestRepo.count(),
-                "totalEntitlements", userEntitlementRepo.count()
+                "totalPlatforms", platformRepo.count()
         ));
     }
 }

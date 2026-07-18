@@ -2,10 +2,9 @@ import { useState } from 'react';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { Layout, Menu, Button, Dropdown, theme } from 'antd';
 import {
-  DashboardOutlined, UserOutlined, GiftOutlined, GlobalOutlined,
-  PlayCircleOutlined, SafetyOutlined, SettingOutlined, LogoutOutlined,
-  MenuFoldOutlined, MenuUnfoldOutlined, AppstoreOutlined,
-  NodeIndexOutlined, ApartmentOutlined
+  DashboardOutlined, UserOutlined, GlobalOutlined,
+  SafetyOutlined, SettingOutlined, LogoutOutlined,
+  MenuFoldOutlined, MenuUnfoldOutlined,
 } from '@ant-design/icons';
 import { useAuthStore } from '../stores/auth';
 
@@ -16,17 +15,8 @@ const menuItems = [
   { key: 'admin', icon: <UserOutlined />, label: '管理员管理', children: [
     { key: '/admin/users', label: '管理员列表' },
   ]},
-  { key: 'entitlement', icon: <GiftOutlined />, label: '权益管理', children: [
-    { key: '/entitlement/products', label: '产品管理' },
-    { key: '/entitlement/batches', label: '批次管理' },
-  ]},
   { key: 'platform', icon: <GlobalOutlined />, label: '平台管理', children: [
     { key: '/platform', label: '平台配置' },
-  ]},
-  { key: 'playback', icon: <PlayCircleOutlined />, label: '播放路由', children: [
-    { key: '/playback/providers', label: '供应商管理' },
-    { key: '/playback/routes', label: '线路管理' },
-    { key: '/playback/rules', label: '规则管理' },
   ]},
   { key: 'risk', icon: <SafetyOutlined />, label: '风控管理' },
   { key: 'config', icon: <SettingOutlined />, label: '配置发布' },
@@ -49,7 +39,7 @@ export default function MainLayout() {
             {collapsed ? '权益' : '视频权益管理'}
           </h2>
         </div>
-        <Menu mode="inline" selectedKeys={[location.pathname]} defaultOpenKeys={['admin', 'entitlement', 'platform', 'playback']}
+        <Menu mode="inline" selectedKeys={[location.pathname]} defaultOpenKeys={['admin', 'platform']}
           items={menuItems} onClick={({ key }) => navigate(key)} style={{ borderRight: 0 }} />
       </Sider>
       <Layout>

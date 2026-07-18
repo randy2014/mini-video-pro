@@ -17,6 +17,7 @@ public class PlatformConfigRequest {
     private String platformCode;
 
     private String platformName;
+    private String platformType;
     private String homeUrl;
     private List<String> domains;
 }

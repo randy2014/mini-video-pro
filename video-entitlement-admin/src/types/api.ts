@@ -38,42 +38,12 @@ export interface AdminVO {
   createdAt: string;
 }
 
-// Entitlement
-export interface EntitlementProduct {
-  id: number;
-  productCode: string;
-  productName: string;
-  description: string;
-  validityType: string;
-  validDays: number;
-  dailyUsageLimit: number;
-  totalUsageLimit: number;
-  deviceLimit: number;
-  status: string;
-  createdAt: string;
-}
-export interface EntitlementBatch {
-  id: number;
-  batchNo: string;
-  productId: number;
-  channelCode: string;
-  quantity: number;
-  generatedCount: number;
-  activatedCount: number;
-  status: string;
-  createdAt: string;
-}
-export interface EntitlementBatchRequest {
-  productId: number;
-  channelCode?: string;
-  quantity: number;
-}
-
 // Platform
 export interface VideoPlatform {
   id: number;
   platformCode: string;
   platformName: string;
+  platformType: string;
   homeUrl: string;
   status: string;
   enabled: boolean;
@@ -82,53 +52,9 @@ export interface VideoPlatform {
 export interface PlatformConfigRequest {
   platformCode: string;
   platformName: string;
+  platformType: string;
   homeUrl: string;
   domains?: string[];
-}
-
-// Playback
-export interface PlaybackProvider {
-  id: number;
-  providerCode: string;
-  providerName: string;
-  providerType: string;
-  status: string;
-  authorizationStatus: string;
-}
-export interface PlaybackRoute {
-  id: number;
-  routeCode: string;
-  providerId: number;
-  groupId: number;
-  routeType: string;
-  targetTemplate: string;
-  priority: number;
-  enabled: boolean;
-  authorizationStatus: string;
-}
-export interface PlaybackRule {
-  id: number;
-  platformCode: string;
-  clientType: string;
-  routeGroupId: number;
-  priority: number;
-  enabled: boolean;
-}
-export interface PlaybackRouteGroup {
-  id: number;
-  groupCode: string;
-  platformCode: string;
-  selectionStrategy: string;
-  maximumAttempts: number;
-  enabled: boolean;
-}
-export interface RouteHealth {
-  id: number;
-  routeId: number;
-  healthStatus: string;
-  successRate5m: number;
-  consecutiveFailureCount: number;
-  circuitOpenUntil: string;
 }
 
 // Risk
