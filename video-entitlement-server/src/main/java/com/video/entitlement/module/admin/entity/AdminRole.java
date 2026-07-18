@@ -29,6 +29,6 @@ public class AdminRole {
     @Builder.Default
     private String status = "ACTIVE";
 
-    @Column(name = "created_at", nullable = false, updatable = false)
+    @Column(name = "created_at", nullable = false, insertable = false, updatable = false)
     private LocalDateTime createdAt;
 }

@@ -35,6 +35,6 @@ public class PlaybackResult {
     @Column(name = "total_duration_ms")
     private Long totalDurationMs;
 
-    @Column(name = "created_at", nullable = false, updatable = false)
+    @Column(name = "created_at", nullable = false, insertable = false, updatable = false)
     private LocalDateTime createdAt;
 }

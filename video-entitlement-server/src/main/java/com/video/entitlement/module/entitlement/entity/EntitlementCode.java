@@ -38,6 +38,6 @@ public class EntitlementCode {
     @Column(name = "activated_at")
     private LocalDateTime activatedAt;
 
-    @Column(name = "created_at", nullable = false, updatable = false)
+    @Column(name = "created_at", nullable = false, insertable = false, updatable = false)
     private LocalDateTime createdAt;
 }

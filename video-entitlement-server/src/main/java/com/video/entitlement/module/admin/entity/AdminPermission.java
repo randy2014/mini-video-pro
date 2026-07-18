@@ -31,6 +31,6 @@ public class AdminPermission {
     @Column(length = 255)
     private String path;
 
-    @Column(name = "created_at", nullable = false, updatable = false)
+    @Column(name = "created_at", nullable = false, insertable = false, updatable = false)
     private LocalDateTime createdAt;
 }

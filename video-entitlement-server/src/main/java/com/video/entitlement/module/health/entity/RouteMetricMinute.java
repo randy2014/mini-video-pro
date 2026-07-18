@@ -40,6 +40,6 @@ public class RouteMetricMinute {
     @Column(name = "p95_ms")
     private Long p95Ms;
 
-    @Column(name = "created_at", nullable = false, updatable = false)
+    @Column(name = "created_at", nullable = false, insertable = false, updatable = false)
     private LocalDateTime createdAt;
 }

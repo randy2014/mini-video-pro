@@ -38,9 +38,9 @@ public class RouteHealth {
     @Column(name = "circuit_open_until")
     private LocalDateTime circuitOpenUntil;
 
-    @Column(name = "created_at", nullable = false, updatable = false)
+    @Column(name = "created_at", nullable = false, insertable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    @Column(name = "updated_at")
+    @Column(name = "updated_at", insertable = false, updatable = false)
     private LocalDateTime updatedAt;
 }

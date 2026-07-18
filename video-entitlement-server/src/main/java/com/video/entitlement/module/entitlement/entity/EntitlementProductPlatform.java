@@ -28,6 +28,6 @@ public class EntitlementProductPlatform {
     @Column(name = "scope_type", length = 32)
     private String scopeType;
 
-    @Column(name = "created_at", nullable = false, updatable = false)
+    @Column(name = "created_at", nullable = false, insertable = false, updatable = false)
     private LocalDateTime createdAt;
 }

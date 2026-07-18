@@ -34,6 +34,6 @@ public class ConfigReleaseItem {
     @Column(name = "content_hash", length = 128)
     private String contentHash;
 
-    @Column(name = "created_at", nullable = false, updatable = false)
+    @Column(name = "created_at", nullable = false, insertable = false, updatable = false)
     private LocalDateTime createdAt;
 }

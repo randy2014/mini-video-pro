@@ -43,6 +43,6 @@ public class AdminOperationLog {
     @Column(name = "request_id", length = 64)
     private String requestId;
 
-    @Column(name = "created_at", nullable = false, updatable = false)
+    @Column(name = "created_at", nullable = false, insertable = false, updatable = false)
     private LocalDateTime createdAt;
 }
