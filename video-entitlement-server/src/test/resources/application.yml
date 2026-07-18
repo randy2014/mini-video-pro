@@ -1,0 +1,31 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:testdb;MODE=MySQL;DATABASE_TO_LOWER=true
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: false
+  flyway:
+    enabled: false
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      timeout: 2000ms
+
+app:
+  jwt:
+    access-token:
+      secret: test-access-secret-key-must-be-at-least-256-bits-long-enough
+      expiration-ms: 300000
+    refresh-token:
+      secret: test-refresh-secret-key-must-be-at-least-256-bits-long-enough
+      expiration-ms: 600000
+  admin:
+    default-username: admin
+    default-password: Admin@123
+  entitlement-code:
+    hmac-key: test-hmac-key-for-code-hashing-testing
