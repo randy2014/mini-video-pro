@@ -1,0 +1,16 @@
+# Build outputs
+**/target/
+**/build/
+**/dist/
+**/node_modules/
+**/.idea/
+**/*.iml
+**/.vscode/
+
+# Local stray dirs at repo root (NOT source — see 工作沉淀.md 坑1)
+/src/
+/docker/
+
+# OS / editor
+.DS_Store
+*.log
