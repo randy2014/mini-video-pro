@@ -107,6 +107,9 @@ jobs:
             cat /etc/nginx/sites-enabled/default 2>/dev/null | grep -A10 "admin" || echo "无 /etc/nginx/sites-enabled/default"
             cat /etc/nginx/conf.d/*.conf 2>/dev/null | grep -A10 "admin" || echo "无 conf.d 配置"
             ls -la /etc/nginx/sites-enabled/ 2>/dev/null || true
+            echo "=== 完整 Nginx 配置 ==="
+            cat /etc/nginx/sites-enabled/* 2>/dev/null || true
+            cat /etc/nginx/nginx.conf 2>/dev/null || true
             
             # 确保持久化目录存在
             mkdir -p /data/video-apk
