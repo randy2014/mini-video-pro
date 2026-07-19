@@ -110,6 +110,7 @@ class LoginActivity : AppCompatActivity() {
         if (entitlementCode.isEmpty()) { etEntitlementCode.error = "权益码为必填项"; return }
         if (entitlementCode.length != 8) { etEntitlementCode.error = "权益码须为8位数字"; return }
         if (captchaCode.isEmpty()) { etCaptcha.error = "请输入图形验证码"; return }
+        if (captchaKey.isEmpty()) { toast("验证码未加载，请点击刷新"); loadCaptcha(); return }
 
         setLoading(true)
 
