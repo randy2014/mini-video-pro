@@ -3,6 +3,7 @@ import { Table, Button, Input, Space, Popconfirm, message, Tag } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
 import { getUsers, updateUserStatus } from '../../services/user';
 import type { UserVO } from '../../types/api';
+import dayjs from 'dayjs';
 
 export default function UserManage() {
   const [data, setData] = useState<UserVO[]>([]);
@@ -10,6 +11,8 @@ export default function UserManage() {
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(0);
   const [keyword, setKeyword] = useState('');
+
+  const fmt = (s?: string) => s ? dayjs(s).format('YYYY-MM-DD HH:mm') : '-';
 
   const fetch = (p = 0) => {
     setLoading(true);
@@ -54,7 +57,8 @@ export default function UserManage() {
       title: '状态', dataIndex: 'status', width: 80,
       render: (s: string) => s === 'ACTIVE' ? '✅ 正常' : '⛔ 禁用',
     },
-    { title: '最后登录', dataIndex: 'lastLoginAt', width: 160 },
+    { title: '最后登录', dataIndex: 'lastLoginAt', width: 140, render: (s: string) => fmt(s) },
+    { title: '注册时间', dataIndex: 'createdAt', width: 140, render: (s: string) => fmt(s) },
     {
       title: '操作', width: 100,
       render: (_: unknown, record: UserVO) => (

@@ -3,6 +3,7 @@ import { Card, Table, Button, Modal, Form, Input, Select, Tabs, Tag, App, Space 
 import { PlusOutlined } from '@ant-design/icons';
 import { getBlacklist, addBlacklist, getRiskEvents, getRiskRules } from '../../services/risk';
 import type { RiskBlacklist, RiskEvent, RiskRule } from '../../types/api';
+import dayjs from 'dayjs';
 
 export default function RiskManage() {
   const [blacklist, setBlacklist] = useState<RiskBlacklist[]>([]);
@@ -11,6 +12,7 @@ export default function RiskManage() {
   const [modalOpen, setModalOpen] = useState(false);
   const [form] = Form.useForm();
   const { message } = App.useApp();
+  const fmt = (s?: string) => s ? dayjs(s).format('YYYY-MM-DD HH:mm') : '-';
 
   useEffect(() => {
     getBlacklist().then(setBlacklist).catch(() => {});
@@ -42,7 +44,7 @@ export default function RiskManage() {
     { title: '动作', dataIndex: 'action', key: 'action', render: (v: string) => (
       <Tag color={v === 'BLOCK' ? 'red' : v === 'BAN' ? 'volcano' : 'blue'}>{v}</Tag>
     )},
-    { title: '时间', dataIndex: 'createdAt', key: 'createdAt', width: 180 },
+    { title: '时间', dataIndex: 'createdAt', key: 'createdAt', width: 160, render: (s: string) => fmt(s) },
   ];
   const ruleColumns = [
     { title: '规则编码', dataIndex: 'ruleCode', key: 'ruleCode' },

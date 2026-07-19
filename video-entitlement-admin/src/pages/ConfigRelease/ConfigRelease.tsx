@@ -3,6 +3,7 @@ import { Card, Table, Button, Modal, Form, Input, Select, InputNumber, Tag, App 
 import { PlusOutlined } from '@ant-design/icons';
 import { getReleases, createRelease } from '../../services/config';
 import type { ConfigRelease } from '../../types/api';
+import dayjs from 'dayjs';
 
 export default function ConfigReleasePage() {
   const [data, setData] = useState<ConfigRelease[]>([]);
@@ -12,6 +13,7 @@ export default function ConfigReleasePage() {
   const [modalOpen, setModalOpen] = useState(false);
   const [form] = Form.useForm();
   const { message } = App.useApp();
+  const fmt = (s?: string) => s ? dayjs(s).format('YYYY-MM-DD HH:mm') : '-';
 
   const fetchData = async (p: number) => {
     setLoading(true);
@@ -37,8 +39,8 @@ export default function ConfigReleasePage() {
       <Tag color={v === 'PUBLISHED' ? 'green' : v === 'DRAFT' ? 'blue' : v === 'ROLLED_BACK' ? 'red' : 'orange'}>{v}</Tag>
     )},
     { title: '描述', dataIndex: 'description', key: 'description', ellipsis: true },
-    { title: '发布时间', dataIndex: 'publishedAt', key: 'publishedAt', width: 180 },
-    { title: '创建时间', dataIndex: 'createdAt', key: 'createdAt', width: 180 },
+    { title: '发布时间', dataIndex: 'publishedAt', key: 'publishedAt', width: 160, render: (s: string) => fmt(s) },
+    { title: '创建时间', dataIndex: 'createdAt', key: 'createdAt', width: 160, render: (s: string) => fmt(s) },
   ];
 
   return (

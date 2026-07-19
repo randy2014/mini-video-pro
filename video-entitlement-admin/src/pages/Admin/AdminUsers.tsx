@@ -3,6 +3,7 @@ import { Card, Table, Button, Modal, Form, Input, Select, Space, Tag, App } from
 import { PlusOutlined } from '@ant-design/icons';
 import { getAdminUsers, createAdmin, getRoles } from '../../services/admin';
 import type { AdminVO, AdminRole } from '../../types/api';
+import dayjs from 'dayjs';
 
 export default function AdminUsers() {
   const [data, setData] = useState<AdminVO[]>([]);
@@ -13,6 +14,7 @@ export default function AdminUsers() {
   const [roles, setRoles] = useState<AdminRole[]>([]);
   const [form] = Form.useForm();
   const { message } = App.useApp();
+  const fmt = (s?: string) => s ? dayjs(s).format('YYYY-MM-DD HH:mm') : '-';
 
   const fetchData = async (p: number) => {
     setLoading(true);
@@ -40,8 +42,8 @@ export default function AdminUsers() {
     { title: '状态', dataIndex: 'status', key: 'status', render: (v: string) => (
       <Tag color={v === 'ACTIVE' ? 'green' : 'red'}>{v === 'ACTIVE' ? '正常' : '停用'}</Tag>
     )},
-    { title: '最后登录', dataIndex: 'lastLoginAt', key: 'lastLoginAt', width: 180 },
-    { title: '创建时间', dataIndex: 'createdAt', key: 'createdAt', width: 180 },
+    { title: '最后登录', dataIndex: 'lastLoginAt', key: 'lastLoginAt', width: 160, render: (s: string) => fmt(s) },
+    { title: '创建时间', dataIndex: 'createdAt', key: 'createdAt', width: 160, render: (s: string) => fmt(s) },
   ];
 
   return (

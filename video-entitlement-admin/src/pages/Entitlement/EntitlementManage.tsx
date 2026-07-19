@@ -65,6 +65,8 @@ export default function EntitlementManage() {
     fetch(page);
   };
 
+  const fmt = (s?: string) => s ? dayjs(s).format('YYYY-MM-DD HH:mm') : '-';
+
   const columns = [
     { title: 'ID', dataIndex: 'id', width: 60 },
     { title: '权益名称', dataIndex: 'entitlementName' },
@@ -72,8 +74,9 @@ export default function EntitlementManage() {
     { title: '拥有人', dataIndex: 'ownerName', width: 100 },
     { title: '电话', dataIndex: 'ownerPhone', width: 120 },
     { title: '状态', dataIndex: 'status', width: 80, render: (s: string) => s === 'ENABLED' ? '✅ 启用' : '⛔ 禁用' },
-    { title: '开始时间', dataIndex: 'startTime', width: 120 },
-    { title: '结束时间', dataIndex: 'endTime', width: 120 },
+    { title: '开始时间', dataIndex: 'startTime', width: 140, render: (s: string) => fmt(s) },
+    { title: '结束时间', dataIndex: 'endTime', width: 140, render: (s: string) => fmt(s) },
+    { title: '创建时间', dataIndex: 'createdAt', width: 140, render: (s: string) => fmt(s) },
     {
       title: '操作', width: 140,
       render: (_: unknown, record: Entitlement) => (
