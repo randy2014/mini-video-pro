@@ -19,8 +19,19 @@ android {
         versionName = "0.9.$ts"
         versionCode = ts.substring(4).toInt()  // MMddHHmm 整数, 如 07191345
     }
+    signingConfigs {
+        create("release") {
+            storeFile = file("../mini-video-release.jks")
+            storePassword = "MiniVideo@2026!"
+            keyAlias = "mini-video"
+            keyPassword = "MiniVideo@2026!"
+        }
+    }
     buildTypes {
-        release { isMinifyEnabled = false }
+        release {
+            isMinifyEnabled = false
+            signingConfig = signingConfigs.getByName("release")
+        }
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17

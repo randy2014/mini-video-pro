@@ -114,7 +114,7 @@ class LoginActivity : AppCompatActivity() {
                     put("entitlementCode", entitlementCode)
                     put("captchaKey", captchaKey)
                     put("captchaCode", captchaCode)
-                    put("devicePublicId", getDeviceId())
+                    put("devicePublicId", getMyDeviceId())
                     put("clientType", "ANDROID")
                     put("appVersion", getAppVersion())
                 }
@@ -175,7 +175,7 @@ class LoginActivity : AppCompatActivity() {
         btnLogin.text = if (loading) "请稍候..." else "登录 / 注册"
     }
 
-    private fun getDeviceId(): String {
+    private fun getMyDeviceId(): String {
         return android.provider.Settings.Secure.getString(
             contentResolver,
             android.provider.Settings.Secure.ANDROID_ID
