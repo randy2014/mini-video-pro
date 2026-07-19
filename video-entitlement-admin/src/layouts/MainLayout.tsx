@@ -5,6 +5,7 @@ import {
   DashboardOutlined, UserOutlined, GlobalOutlined,
   SafetyOutlined, SettingOutlined, LogoutOutlined,
   MenuFoldOutlined, MenuUnfoldOutlined, CrownOutlined, TeamOutlined,
+  CloudUploadOutlined,
 } from '@ant-design/icons';
 import { useAuthStore } from '../stores/auth';
 
@@ -22,6 +23,7 @@ const menuItems = [
   ]},
   { key: 'risk', icon: <SafetyOutlined />, label: '风控管理' },
   { key: 'config', icon: <SettingOutlined />, label: '配置发布' },
+  { key: '/app-versions', icon: <CloudUploadOutlined />, label: 'APP版本管理' },
 ];
 
 export default function MainLayout() {

@@ -127,6 +127,9 @@ jobs:
               -e JWT_REFRESH_SECRET=${{ secrets.JWT_REFRESH_SECRET }} \
               -e ENTITLEMENT_HMAC_KEY=${{ secrets.ENTITLEMENT_HMAC_KEY }} \
               -e SWAGGER_ENABLED=false \
+              -e APP_APK_DIR=/data/video-apk \
+              -e APP_DOWNLOAD_BASE=http://43.161.222.78:8082/downloads \
+              -v /data/video-apk:/data/video-apk \
               ${{ env.BACKEND_IMAGE }}:latest
             
             # 启动前端

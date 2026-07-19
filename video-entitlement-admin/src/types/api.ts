@@ -169,3 +169,23 @@ export interface UserVO {
   createdAt: string;
   entitlements?: { entitlementCode: string; expireTime: string }[];
 }
+
+// ====== APP 版本管理 ======
+export interface AppVersion {
+  id: number;
+  versionName: string;
+  versionCode: number;
+  downloadUrl: string;
+  releaseNotes: string;
+  forceUpdate: boolean;
+  status: string;
+  createdAt: string;
+  updatedAt: string;
+}
+export interface AppVersionRequest {
+  versionName?: string;
+  versionCode?: number;
+  downloadUrl?: string;
+  releaseNotes?: string;
+  forceUpdate?: boolean;
+}

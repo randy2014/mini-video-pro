@@ -8,6 +8,7 @@ import RiskManage from './pages/Risk/RiskManage';
 import ConfigReleasePage from './pages/ConfigRelease/ConfigRelease';
 import EntitlementManage from './pages/Entitlement/EntitlementManage';
 import UserManage from './pages/User/UserManage';
+import AppVersionManage from './pages/AppVersion/AppVersionManage';
 import { useAuthStore } from './stores/auth';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -27,6 +28,7 @@ export default function App() {
         <Route path="risk" element={<RiskManage />} />
         <Route path="config" element={<ConfigReleasePage />} />
         <Route path="entitlement" element={<EntitlementManage />} />
+        <Route path="app-versions" element={<AppVersionManage />} />
         <Route path="users" element={<UserManage />} />
       </Route>
     </Routes>

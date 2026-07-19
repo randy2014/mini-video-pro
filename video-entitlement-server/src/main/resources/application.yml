@@ -72,6 +72,8 @@ app:
     attempt-timeout-seconds: 30
   entitlement-code:
     hmac-key: ${ENTITLEMENT_HMAC_KEY:change-me-hmac-key-for-code-hashing}
+  apk-dir: ${APP_APK_DIR:/data/video-apk}
+  download-base: ${APP_DOWNLOAD_BASE:http://43.161.222.78:8082/downloads}
 logging:
   level:
     root: INFO
