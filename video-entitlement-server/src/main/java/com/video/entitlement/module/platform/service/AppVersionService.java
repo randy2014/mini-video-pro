@@ -43,15 +43,15 @@ public class AppVersionService {
     @Transactional
     public AppVersionVO create(AppVersionRequest req) {
         if (req.getVersionCode() == null || req.getVersionCode() <= 0) {
-            throw new BusinessException("versionCode 必须为正整数");
+            throw new BusinessException(400, "versionCode 必须为正整数");
         }
         if (req.getVersionName() == null || req.getVersionName().isBlank()) {
-            throw new BusinessException("versionName 不能为空");
+            throw new BusinessException(400, "versionName 不能为空");
         }
 
         // 检查 versionCode 唯一
         appVersionRepository.findByVersionCode(req.getVersionCode()).ifPresent(v -> {
-            throw new BusinessException("versionCode " + req.getVersionCode() + " 已存在");
+            throw new BusinessException(400, "versionCode " + req.getVersionCode() + " 已存在");
         });
 
         AppVersion entity = AppVersion.builder()
@@ -72,7 +72,7 @@ public class AppVersionService {
     @Transactional
     public AppVersionVO update(Long id, AppVersionRequest req) {
         AppVersion entity = appVersionRepository.findById(id)
-                .orElseThrow(() -> new BusinessException("版本记录不存在"));
+                .orElseThrow(() -> new BusinessException(404, "版本记录不存在"));
 
         if (req.getVersionName() != null && !req.getVersionName().isBlank()) {
             entity.setVersionName(req.getVersionName());
@@ -81,7 +81,7 @@ public class AppVersionService {
                 && !req.getVersionCode().equals(entity.getVersionCode())) {
             appVersionRepository.findByVersionCode(req.getVersionCode()).ifPresent(v -> {
                 if (!v.getId().equals(id)) {
-                    throw new BusinessException("versionCode " + req.getVersionCode() + " 已存在");
+                    throw new BusinessException(400, "versionCode " + req.getVersionCode() + " 已存在");
                 }
             });
             entity.setVersionCode(req.getVersionCode());
@@ -105,7 +105,7 @@ public class AppVersionService {
     @Transactional
     public AppVersionVO toggleStatus(Long id, String status) {
         AppVersion entity = appVersionRepository.findById(id)
-                .orElseThrow(() -> new BusinessException("版本记录不存在"));
+                .orElseThrow(() -> new BusinessException(404, "版本记录不存在"));
         entity.setStatus(status);
         return toVO(appVersionRepository.save(entity));
     }
