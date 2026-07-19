@@ -131,3 +131,40 @@ export interface AdminRole {
   roleName: string;
   status: string;
 }
+
+// ====== 权益管理 ======
+export interface Entitlement {
+  id: number;
+  entitlementName: string;
+  entitlementCode: string;
+  startTime: string;
+  endTime: string;
+  status: string;
+  ownerName: string;
+  ownerPhone: string;
+  ownerProfession: string;
+  createdAt: string;
+}
+
+export interface EntitlementRequest {
+  entitlementName: string;
+  entitlementCode: string;
+  startTime?: string;
+  endTime?: string;
+  status?: string;
+  ownerName?: string;
+  ownerPhone?: string;
+  ownerProfession?: string;
+}
+
+// ====== 用户管理 ======
+export interface UserVO {
+  id: number;
+  userNo: string;
+  mobile: string;
+  nickname: string;
+  status: string;
+  riskLevel: string;
+  lastLoginAt: string;
+  createdAt: string;
+}

@@ -4,7 +4,7 @@ import { Layout, Menu, Button, Dropdown, theme } from 'antd';
 import {
   DashboardOutlined, UserOutlined, GlobalOutlined,
   SafetyOutlined, SettingOutlined, LogoutOutlined,
-  MenuFoldOutlined, MenuUnfoldOutlined,
+  MenuFoldOutlined, MenuUnfoldOutlined, CrownOutlined, TeamOutlined,
 } from '@ant-design/icons';
 import { useAuthStore } from '../stores/auth';
 
@@ -15,6 +15,8 @@ const menuItems = [
   { key: 'admin', icon: <UserOutlined />, label: '管理员管理', children: [
     { key: '/admin/users', label: '管理员列表' },
   ]},
+  { key: '/entitlement', icon: <CrownOutlined />, label: '权益管理' },
+  { key: '/users', icon: <TeamOutlined />, label: '用户管理' },
   { key: 'platform', icon: <GlobalOutlined />, label: '平台管理', children: [
     { key: '/platform', label: '平台配置' },
   ]},
