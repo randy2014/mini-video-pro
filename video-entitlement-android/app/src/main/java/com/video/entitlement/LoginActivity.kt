@@ -31,6 +31,8 @@ class LoginActivity : AppCompatActivity() {
         const val KEY_TOKEN = "access_token"
         const val KEY_REFRESH = "refresh_token"
         const val KEY_MOBILE = "mobile"
+        const val KEY_PASSWORD = "saved_password"
+        const val KEY_ENTITLEMENT_CODE = "saved_entitlement_code"
         val API_BASE = "http://43.161.222.78:8081"
     }
 
@@ -70,6 +72,12 @@ class LoginActivity : AppCompatActivity() {
 
         ivCaptcha.setOnClickListener { loadCaptcha() }
         btnLogin.setOnClickListener { doLogin() }
+
+        // 自动填充上次登录的账号、密码、权益码
+        val prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
+        etAccount.setText(prefs.getString(KEY_MOBILE, ""))
+        etPassword.setText(prefs.getString(KEY_PASSWORD, ""))
+        etEntitlementCode.setText(prefs.getString(KEY_ENTITLEMENT_CODE, ""))
 
         // 显示版本号
         findViewById<TextView>(R.id.tv_login_version)?.text = "v${getAppVersion()}"
@@ -184,6 +192,9 @@ class LoginActivity : AppCompatActivity() {
             .putString(KEY_TOKEN, token)
             .putString(KEY_REFRESH, refresh)
             .putString(KEY_MOBILE, mobile)
+            // 记住密码和权益码，下次自动填充
+            .putString(KEY_PASSWORD, etPassword.text.toString().trim())
+            .putString(KEY_ENTITLEMENT_CODE, etEntitlementCode.text.toString().trim())
             .apply()
     }
 
