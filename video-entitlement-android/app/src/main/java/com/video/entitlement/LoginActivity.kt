@@ -88,7 +88,12 @@ class LoginActivity : AppCompatActivity() {
                 runOnUiThread { ivCaptcha.setImageBitmap(bmp) }
                 conn.disconnect()
             } catch (e: Exception) {
-                runOnUiThread { toast("验证码加载失败") }
+                val msg = when {
+                    e is java.net.ConnectException -> "无法连接服务器"
+                    e is java.net.SocketTimeoutException -> "网络超时"
+                    else -> "验证码加载失败: ${e.message}"
+                }
+                runOnUiThread { toast(msg) }
             }
         }.start()
     }
@@ -154,9 +159,15 @@ class LoginActivity : AppCompatActivity() {
                     }
                 }
             } catch (e: Exception) {
+                val msg = when {
+                    e is java.net.ConnectException -> "无法连接服务器，请检查网络"
+                    e is java.net.SocketTimeoutException -> "连接超时，请重试"
+                    e is java.net.UnknownHostException -> "DNS解析失败，请检查网络"
+                    else -> "登录失败: ${e.message}"
+                }
                 runOnUiThread {
                     setLoading(false)
-                    toast("网络异常: ${e.message}")
+                    toast(msg)
                     loadCaptcha()
                 }
             }
