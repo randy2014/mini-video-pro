@@ -27,7 +27,7 @@ export default function EntitlementManage() {
   const openCreate = () => {
     setEditingId(null);
     form.resetFields();
-    form.setFieldsValue({ status: 'ENABLED' });
+    form.setFieldsValue({ status: 'DISABLED' });
     setModalOpen(true);
   };
 
@@ -99,10 +99,11 @@ export default function EntitlementManage() {
           <Form.Item name="entitlementName" label="权益名称" rules={[{ required: true, message: '请输入' }]}>
             <Input />
           </Form.Item>
-          <Form.Item name="entitlementCode" label="权益代码(8位数字)" rules={[{ required: true, pattern: /^\d{8}$/, message: '须为8位数字' }]}>
-            <Input maxLength={8} />
+          <Form.Item name="entitlementCode" label="权益代码" rules={editingId ? [{ required: true }] : []}>
+            <Input disabled placeholder={editingId ? '' : '保存后自动生成8位数字'} />
           </Form.Item>
-          <Form.Item name="status" label="状态" rules={[{ required: true }]}>
+          <Form.Item name="status" label="状态" rules={[{ required: true }]}
+            extra="启用需设置开始和结束时间">
             <Select options={[{ value: 'ENABLED', label: '启用' }, { value: 'DISABLED', label: '禁用' }]} />
           </Form.Item>
           <Form.Item name="startTime" label="开始时间"><DatePicker showTime style={{ width: '100%' }} /></Form.Item>

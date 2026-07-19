@@ -148,7 +148,7 @@ export interface Entitlement {
 
 export interface EntitlementRequest {
   entitlementName: string;
-  entitlementCode: string;
+  entitlementCode?: string;
   startTime?: string;
   endTime?: string;
   status?: string;
