@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Table, Button, Input, Space, Popconfirm, message } from 'antd';
+import { Table, Button, Input, Space, Popconfirm, message, Tag } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
 import { getUsers, updateUserStatus } from '../../services/user';
 import type { UserVO } from '../../types/api';
@@ -30,9 +30,25 @@ export default function UserManage() {
 
   const columns = [
     { title: 'ID', dataIndex: 'id', width: 60 },
-    { title: '用户编号', dataIndex: 'userNo', width: 140 },
     { title: '手机号', dataIndex: 'mobile', width: 120 },
     { title: '昵称', dataIndex: 'nickname', width: 100 },
+    {
+      title: '权益码 / 到期时间', width: 220,
+      render: (_: unknown, record: UserVO) => {
+        const list = record.entitlements || [];
+        if (list.length === 0) return <span style={{ color: '#999' }}>暂无权益</span>;
+        return (
+          <Space direction="vertical" size={2}>
+            {list.map((e, i) => (
+              <span key={i}>
+                <Tag color="blue">{e.entitlementCode}</Tag>
+                {e.expireTime ? <Tag color={new Date(e.expireTime) > new Date() ? 'green' : 'red'}>{e.expireTime}</Tag> : <Tag>永久</Tag>}
+              </span>
+            ))}
+          </Space>
+        );
+      },
+    },
     { title: '风险等级', dataIndex: 'riskLevel', width: 80 },
     {
       title: '状态', dataIndex: 'status', width: 80,

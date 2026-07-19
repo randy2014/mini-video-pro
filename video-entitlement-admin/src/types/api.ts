@@ -167,4 +167,5 @@ export interface UserVO {
   riskLevel: string;
   lastLoginAt: string;
   createdAt: string;
+  entitlements?: { entitlementCode: string; expireTime: string }[];
 }

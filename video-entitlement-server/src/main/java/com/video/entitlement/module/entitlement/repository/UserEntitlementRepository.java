@@ -7,5 +7,6 @@ import java.util.Optional;
 
 public interface UserEntitlementRepository extends JpaRepository<UserEntitlement, Long> {
     List<UserEntitlement> findByUserId(Long userId);
+    List<UserEntitlement> findByUserIdIn(List<Long> userIds);
     Optional<UserEntitlement> findByUserIdAndEntitlementId(Long userId, Long entitlementId);
 }
