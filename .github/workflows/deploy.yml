@@ -102,6 +102,12 @@ jobs:
             docker pull ${{ env.BACKEND_IMAGE }}:latest
             docker pull ${{ env.FRONTEND_IMAGE }}:latest
             
+            # 诊断：检查系统 Nginx 配置
+            echo "=== 系统 Nginx 诊断 ==="
+            cat /etc/nginx/sites-enabled/default 2>/dev/null | grep -A10 "admin" || echo "无 /etc/nginx/sites-enabled/default"
+            cat /etc/nginx/conf.d/*.conf 2>/dev/null | grep -A10 "admin" || echo "无 conf.d 配置"
+            ls -la /etc/nginx/sites-enabled/ 2>/dev/null || true
+            
             # 确保持久化目录存在
             mkdir -p /data/video-apk
             
@@ -129,3 +135,11 @@ jobs:
             
             echo "=== 部署完成 ==="
             docker ps --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}" | grep video
+            
+            # 重启系统 Nginx 刷新代理缓存
+            if systemctl is-active --quiet nginx 2>/dev/null; then
+              sudo systemctl reload nginx 2>/dev/null || sudo nginx -s reload 2>/dev/null || true
+              echo "系统 Nginx 已重载"
+            fi
+            # 如果 docker 中有 nginx 容器也重载
+            docker exec video-nginx nginx -s reload 2>/dev/null || true
