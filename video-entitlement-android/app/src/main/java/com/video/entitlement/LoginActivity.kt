@@ -71,6 +71,9 @@ class LoginActivity : AppCompatActivity() {
         ivCaptcha.setOnClickListener { loadCaptcha() }
         btnLogin.setOnClickListener { doLogin() }
 
+        // 显示版本号
+        findViewById<TextView>(R.id.tv_login_version)?.text = "v${getAppVersion()}"
+
         loadCaptcha()
     }
 

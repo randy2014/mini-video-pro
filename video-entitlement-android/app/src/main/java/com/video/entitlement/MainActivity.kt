@@ -13,6 +13,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment
+import android.provider.Settings
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
@@ -480,16 +481,31 @@ class MainActivity : AppCompatActivity() {
 
     private fun installApk(uri: Uri) {
         try {
+            // Android 8+ 需要检查安装未知来源权限
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O &&
+                !packageManager.canRequestPackageInstalls()) {
+                toast("请允许安装未知应用后重试")
+                val intent = Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES)
+                    .setData(Uri.parse("package:$packageName"))
+                startActivity(intent)
+                return
+            }
+
             val installIntent = Intent(Intent.ACTION_VIEW).apply {
                 addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                setDataAndType(uri, "application/vnd.android.package-archive")
             }
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                val apkUri = FileProvider.getUriForFile(this,
-                    "${packageName}.fileprovider",
-                    File(uri.path ?: return))
-                installIntent.setDataAndType(apkUri, "application/vnd.android.package-archive")
+                if (uri.scheme == "content") {
+                    installIntent.setDataAndType(uri, "application/vnd.android.package-archive")
+                } else {
+                    val apkUri = FileProvider.getUriForFile(this,
+                        "${packageName}.fileprovider",
+                        File(uri.path ?: return))
+                    installIntent.setDataAndType(apkUri, "application/vnd.android.package-archive")
+                }
+            } else {
+                installIntent.setDataAndType(uri, "application/vnd.android.package-archive")
             }
             startActivity(installIntent)
         } catch (e: Exception) {
