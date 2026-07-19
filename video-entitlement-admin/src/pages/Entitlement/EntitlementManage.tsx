@@ -9,15 +9,15 @@ export default function EntitlementManage() {
   const [data, setData] = useState<Entitlement[]>([]);
   const [loading, setLoading] = useState(false);
   const [total, setTotal] = useState(0);
-  const [page, setPage] = useState(1);
+  const [page, setPage] = useState(0);
   const [modalOpen, setModalOpen] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [form] = Form.useForm();
 
-  const fetch = (p = 1) => {
+  const fetch = (p = 0) => {
     setLoading(true);
     getEntitlements({ page: p, size: 10 })
-      .then((res) => { setData(res.records); setTotal(res.total); setPage(p); })
+      .then((res) => { setData(res.records); setTotal(res.total); setPage(res.page); })
       .catch(() => message.error('加载失败'))
       .finally(() => setLoading(false));
   };
@@ -91,7 +91,7 @@ export default function EntitlementManage() {
     <div>
       <Button type="primary" icon={<PlusOutlined />} onClick={openCreate} style={{ marginBottom: 16 }}>新增权益</Button>
       <Table columns={columns} dataSource={data} rowKey="id" loading={loading}
-        pagination={{ current: page, total, pageSize: 10, onChange: fetch }} size="small" />
+        pagination={{ current: page + 1, total, pageSize: 10, onChange: (p) => fetch(p - 1) }} size="small" />
 
       <Modal title={editingId ? '编辑权益' : '新增权益'} open={modalOpen}
         onOk={handleSubmit} onCancel={() => setModalOpen(false)} destroyOnClose width={600}>

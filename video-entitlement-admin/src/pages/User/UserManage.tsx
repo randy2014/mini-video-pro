@@ -8,13 +8,13 @@ export default function UserManage() {
   const [data, setData] = useState<UserVO[]>([]);
   const [loading, setLoading] = useState(false);
   const [total, setTotal] = useState(0);
-  const [page, setPage] = useState(1);
+  const [page, setPage] = useState(0);
   const [keyword, setKeyword] = useState('');
 
-  const fetch = (p = 1) => {
+  const fetch = (p = 0) => {
     setLoading(true);
     getUsers({ page: p, size: 10, keyword: keyword || undefined })
-      .then((res) => { setData(res.records); setTotal(res.total); setPage(p); })
+      .then((res) => { setData(res.records); setTotal(res.total); setPage(res.page); })
       .catch(() => message.error('加载失败'))
       .finally(() => setLoading(false));
   };
@@ -57,7 +57,7 @@ export default function UserManage() {
         <Button icon={<SearchOutlined />} onClick={() => fetch()}>搜索</Button>
       </Space>
       <Table columns={columns} dataSource={data} rowKey="id" loading={loading}
-        pagination={{ current: page, total, pageSize: 10, onChange: fetch }} size="small" />
+        pagination={{ current: page + 1, total, pageSize: 10, onChange: (p) => fetch(p - 1) }} size="small" />
     </div>
   );
 }
