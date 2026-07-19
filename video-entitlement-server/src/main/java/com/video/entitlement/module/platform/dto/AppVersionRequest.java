@@ -4,20 +4,15 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import java.time.LocalDateTime;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class AppVersionVO {
-    private Long id;
+public class AppVersionRequest {
     private String versionName;
-    private int versionCode;
+    private Integer versionCode;
     private String downloadUrl;
     private String releaseNotes;
-    private boolean forceUpdate;
-    private String status;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+    private Boolean forceUpdate;
 }

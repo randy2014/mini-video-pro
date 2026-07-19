@@ -72,13 +72,6 @@ app:
     attempt-timeout-seconds: 30
   entitlement-code:
     hmac-key: ${ENTITLEMENT_HMAC_KEY:change-me-hmac-key-for-code-hashing}
-  version:
-    name: ${APP_VERSION_NAME:0.9.202607190000}
-    code: ${APP_VERSION_CODE:7190000}
-    download-url: ${APP_DOWNLOAD_URL:}
-    release-notes: ${APP_RELEASE_NOTES:}
-    force-update: ${APP_FORCE_UPDATE:false}
-
 logging:
   level:
     root: INFO
