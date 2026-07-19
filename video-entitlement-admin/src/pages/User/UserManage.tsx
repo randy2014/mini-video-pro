@@ -45,7 +45,7 @@ export default function UserManage() {
             {list.map((e, i) => (
               <span key={i}>
                 <Tag color="blue">{e.entitlementCode}</Tag>
-                {e.expireTime ? <Tag color={new Date(e.expireTime) > new Date() ? 'green' : 'red'}>{e.expireTime}</Tag> : <Tag>永久</Tag>}
+                {e.expireTime ? <Tag color={new Date(e.expireTime) > new Date() ? 'green' : 'red'}>{fmt(e.expireTime)}</Tag> : <Tag>永久</Tag>}
               </span>
             ))}
           </Space>

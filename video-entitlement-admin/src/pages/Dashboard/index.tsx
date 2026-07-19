@@ -4,6 +4,9 @@ import { UserOutlined, GiftOutlined, PlayCircleOutlined, TrophyOutlined } from '
 import { getStatsSummary } from '../../services/stats';
 import { getOperationLogs } from '../../services/admin';
 import type { StatsSummary, AdminOperationLog } from '../../types/api';
+import dayjs from 'dayjs';
+
+const fmt = (s?: string) => (s ? dayjs(s).format('YYYY-MM-DD HH:mm') : '-');
 
 export default function Dashboard() {
   const [stats, setStats] = useState<StatsSummary | null>(null);
@@ -18,7 +21,7 @@ export default function Dashboard() {
     { title: '模块', dataIndex: 'module', key: 'module', width: 100 },
     { title: '操作', dataIndex: 'operation', key: 'operation', width: 100 },
     { title: '结果', dataIndex: 'result', key: 'result', width: 80, render: (v: string) => <Tag color={v === 'SUCCESS' ? 'green' : 'red'}>{v}</Tag> },
-    { title: '时间', dataIndex: 'createdAt', key: 'createdAt', width: 180 },
+    { title: '时间', dataIndex: 'createdAt', key: 'createdAt', width: 180, render: (s: string) => fmt(s) },
   ];
 
   return (
