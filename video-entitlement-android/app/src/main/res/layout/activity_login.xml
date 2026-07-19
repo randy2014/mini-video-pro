@@ -3,14 +3,17 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#1A0A2E"
-    android:fillViewport="true">
+    android:fillViewport="true"
+    android:fitsSystemWindows="true">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:gravity="center_horizontal"
-        android:padding="32dp">
+        android:paddingStart="32dp"
+        android:paddingEnd="32dp"
+        android:paddingBottom="32dp">
 
         <!-- 头部 -->
         <TextView
@@ -20,7 +23,7 @@
             android:textSize="28sp"
             android:textColor="#D4AF37"
             android:textStyle="bold"
-            android:layout_marginTop="40dp" />
+            android:layout_marginTop="56dp" />
 
         <TextView
             android:layout_width="wrap_content"
