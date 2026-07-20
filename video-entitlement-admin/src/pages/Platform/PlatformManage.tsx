@@ -35,6 +35,10 @@ export default function PlatformManage() {
 
   const handleSubmit = async (values: any) => {
     const req = { ...values, platformType: values.platformType || 'video' };
+    // 编辑时 platformCode 字段 disabled 不会随表单提交，从表单 store 补回
+    if (editingId && !req.platformCode) {
+      req.platformCode = form.getFieldValue('platformCode');
+    }
     if (editingId) {
       await updatePlatform(editingId, req);
       message.success('平台更新成功');
