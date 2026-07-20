@@ -1,0 +1,126 @@
+name: Build Android APK
+
+# 仅手动触发（不本地编译，全部走 CI/CD，符合项目原则 #1）
+on:
+  workflow_dispatch:
+    inputs:
+      release_notes:
+        description: "更新说明（用于版本表登记）"
+        required: false
+        default: "自动化构建发布"
+      force_update:
+        description: "是否强制更新 true/false"
+        required: false
+        default: "false"
+
+permissions:
+  contents: read
+
+env:
+  SERVER_HOST: 43.161.222.78
+  SERVER_USER: ubuntu
+  DEPLOY_DIR: /data/video-apk
+  DOMAIN: http://43.161.222.78:8082
+  ANDROID_DIR: video-entitlement-android
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install SDK platform & build-tools
+        run: |
+          yes | sdkmanager --licenses >/dev/null 2>&1 || true
+          sdkmanager "platforms;android-35" "build-tools;35.0.0"
+
+      - name: Make gradlew executable
+        run: chmod +x gradlew
+        working-directory: ${{ env.ANDROID_DIR }}
+
+      # 使用仓库内 keystore + build.gradle.kts 内联密码打「签名 release」
+      - name: Build signed release APK
+        run: ./gradlew assembleRelease --no-daemon
+        working-directory: ${{ env.ANDROID_DIR }}
+
+      - name: Locate APK
+        id: apk
+        run: |
+          APK=$(find ${{ env.ANDROID_DIR }}/app/build/outputs/apk/release -name "*.apk" | head -1)
+          echo "apk=$APK" >> "$GITHUB_OUTPUT"
+          ls -lh "$APK"
+
+      - name: Extract version & build names (from APK 真实值)
+        id: meta
+        run: |
+          AAPT="$ANDROID_HOME/build-tools/35.0.0/aapt"
+          PKG=$("$AAPT" dump badging "${{ steps.apk.outputs.apk }}" | grep "package:")
+          VERSION_NAME=$(echo "$PKG" | sed -n "s/.*versionName='\([^']*\)'.*/\1/p")
+          VERSION_CODE=$(echo "$PKG" | sed -n "s/.*versionCode='\([^']*\)'.*/\1/p")
+          TS=$(date +%Y%m%d-%H%M%S)
+          APK_NAME="video-entitlement-v${VERSION_NAME}-${TS}.apk"
+          QR_NAME="qr-${APK_NAME%.apk}.png"
+          echo "version_name=$VERSION_NAME" >> "$GITHUB_OUTPUT"
+          echo "version_code=$VERSION_CODE" >> "$GITHUB_OUTPUT"
+          echo "apk_name=$APK_NAME" >> "$GITHUB_OUTPUT"
+          echo "qr_name=$QR_NAME" >> "$GITHUB_OUTPUT"
+          echo "::notice::versionName=$VERSION_NAME versionCode=$VERSION_CODE apk=$APK_NAME"
+
+      - name: Generate QR codes (高贵紫主题)
+        run: |
+          pip install --quiet "qrcode[pil]" || pip3 install --quiet "qrcode[pil]"
+          python3 - <<PYEOF
+          import qrcode
+          domain = "${{ env.DOMAIN }}"
+          apk_name = "${{ steps.meta.outputs.apk_name }}"
+          qr = qrcode.QRCode(version=2, error_correction=qrcode.constants.ERROR_CORRECT_H, box_size=14, border=2)
+          qr.add_data(f"{domain}/downloads/{apk_name}")
+          qr.make(fit=True)
+          img = qr.make_image(fill_color="#7C5CBF", back_color="#F5F0FF")
+          img.save("${{ steps.meta.outputs.qr_name }}")
+          qr2 = qrcode.QRCode(version=2, error_correction=qrcode.constants.ERROR_CORRECT_H, box_size=14, border=2)
+          qr2.add_data(f"{domain}/downloads/video-entitlement-latest.apk")
+          qr2.make(fit=True)
+          img2 = qr2.make_image(fill_color="#7C5CBF", back_color="#F5F0FF")
+          img2.save("qr-download-latest.png")
+          print("QR generated:", "${{ steps.meta.outputs.qr_name }}", "qr-download-latest.png")
+          PYEOF
+
+      # 复用 deploy.yml 的 SERVER_SSH_KEY secret 直传 /data/video-apk
+      - name: Upload APK + QR to server
+        run: |
+          echo "${{ secrets.SERVER_SSH_KEY }}" > /tmp/video_key
+          chmod 600 /tmp/video_key
+          APK="${{ steps.apk.outputs.apk }}"
+          APK_NAME="${{ steps.meta.outputs.apk_name }}"
+          QR_NAME="${{ steps.meta.outputs.qr_name }}"
+          HOST="${{ env.SERVER_HOST }}"
+          USER="${{ env.SERVER_USER }}"
+          DIR="${{ env.DEPLOY_DIR }}"
+          scp -i /tmp/video_key -o StrictHostKeyChecking=no "$APK" "$USER@$HOST:$DIR/$APK_NAME"
+          scp -i /tmp/video_key -o StrictHostKeyChecking=no "$APK" "$USER@$HOST:$DIR/video-entitlement-latest.apk"
+          scp -i /tmp/video_key -o StrictHostKeyChecking=no "$QR_NAME" "$USER@$HOST:$DIR/"
+          scp -i /tmp/video_key -o StrictHostKeyChecking=no "qr-download-latest.png" "$USER@$HOST:$DIR/"
+          rm -f /tmp/video_key
+          echo "::notice::DOWNLOAD_URL=${{ env.DOMAIN }}/downloads/${APK_NAME}"
+          echo "::notice::QR_URL=${{ env.DOMAIN }}/downloads/${QR_NAME}"
+          echo "::notice::LATEST=${{ env.DOMAIN }}/downloads/video-entitlement-latest.apk"
+
+      - name: Build summary
+        run: |
+          {
+            echo "### 🤖 Android APK 构建完成"
+            echo "- 版本: ${{ steps.meta.outputs.version_name }} (code ${{ steps.meta.outputs.version_code }})"
+            echo "- 下载: ${{ env.DOMAIN }}/downloads/${{ steps.meta.outputs.apk_name }}"
+            echo "- 二维码: ${{ env.DOMAIN }}/downloads/${{ steps.meta.outputs.qr_name }}"
+            echo "- 最新版: ${{ env.DOMAIN }}/downloads/video-entitlement-latest.apk"
+          } >> "$GITHUB_STEP_SUMMARY"
