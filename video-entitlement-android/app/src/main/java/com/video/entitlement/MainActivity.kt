@@ -259,7 +259,7 @@ class MainActivity : AppCompatActivity() {
     private fun buildSectionHeader(label: String): View {
         val row = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL
-            setPadding(0, dp(24), 0, dp(14))
+            setPadding(0, dp(26), 0, dp(12))
         }
         val dot = View(this).apply {
             layoutParams = LinearLayout.LayoutParams(dp(6), dp(6)).apply { marginEnd = dp(8) }
@@ -268,8 +268,8 @@ class MainActivity : AppCompatActivity() {
             }
         }
         val tv = TextView(this).apply {
-            text = label; textSize = 15f; setTypeface(null, Typeface.BOLD)
-            setTextColor(0xFFD4AF37.toInt())
+            text = label; textSize = 16f; setTypeface(null, Typeface.BOLD)
+            setTextColor(0xFFF1D77A.toInt())
         }
         row.addView(dot); row.addView(tv)
         return row
@@ -302,10 +302,14 @@ class MainActivity : AppCompatActivity() {
         val brand = brandColors[p.code] ?: 0xFF7C5CBF.toInt()
         val card = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL; gravity = Gravity.CENTER
-            setPadding(dp(20), dp(22), dp(20), dp(22))
+            minimumHeight = dp(136)
+            setPadding(dp(14), dp(18), dp(14), dp(18))
+            contentDescription = "${p.name}，${typeLabels[p.type] ?: "平台"}"
+            isFocusable = true
+            elevation = dp(2).toFloat()
             background = GradientDrawable().apply {
-                setColor(0xFF1E1035.toInt()); cornerRadius = dp(16).toFloat()
-                setStroke(1, 0x22D4AF37)
+                setColor(0xF21E1035.toInt()); cornerRadius = dp(16).toFloat()
+                setStroke(dp(1), 0x3DD4AF37)
             }
             setOnClickListener { openPlatform(p) }
         }
@@ -314,7 +318,7 @@ class MainActivity : AppCompatActivity() {
         val dots = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
             gravity = Gravity.CENTER
-            layoutParams = LinearLayout.LayoutParams(WRAP, WRAP).apply { bottomMargin = dp(14) }
+            layoutParams = LinearLayout.LayoutParams(WRAP, WRAP).apply { bottomMargin = dp(10) }
         }
         for (j in 0..2) {
             dots.addView(View(this).apply {
@@ -330,21 +334,22 @@ class MainActivity : AppCompatActivity() {
 
         // 品牌色圆点
         val circle = View(this).apply {
-            layoutParams = LinearLayout.LayoutParams(dp(28), dp(28)).apply { bottomMargin = dp(12) }
+            layoutParams = LinearLayout.LayoutParams(dp(32), dp(32)).apply { bottomMargin = dp(10) }
             background = GradientDrawable().apply { setColor(brand); shape = GradientDrawable.OVAL }
         }
 
         // 名称
         val name = TextView(this).apply {
-            text = p.name; textSize = 13f; setTextColor(0xFFF0E8FF.toInt())
+            text = p.name; textSize = 15f; setTextColor(0xFFF7F2FF.toInt())
             setTypeface(null, Typeface.BOLD); gravity = Gravity.CENTER; maxLines = 1
             ellipsize = android.text.TextUtils.TruncateAt.END
+            setPadding(dp(4), 0, dp(4), 0)
         }
 
         // 标签
         val tag = TextView(this).apply {
-            text = typeLabels[p.type] ?: ""; textSize = 10f; setTextColor(0xFFD4AF37.toInt())
-            setPadding(dp(8), dp(3), dp(8), dp(3))
+            text = typeLabels[p.type] ?: ""; textSize = 11f; setTextColor(0xFFF1D77A.toInt())
+            setPadding(dp(10), dp(4), dp(10), dp(4))
             layoutParams = LinearLayout.LayoutParams(WRAP, WRAP).apply { topMargin = dp(8) }
             background = GradientDrawable().apply {
                 setColor(0x18D4AF37); cornerRadius = dp(8).toFloat()

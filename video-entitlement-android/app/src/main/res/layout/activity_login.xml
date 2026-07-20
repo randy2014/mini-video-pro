@@ -2,7 +2,7 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#1A0A2E"
+    android:background="@drawable/bg_home_gradient"
     android:fillViewport="true"
     android:fitsSystemWindows="true">
 
@@ -11,78 +11,83 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:gravity="center_horizontal"
-        android:paddingStart="32dp"
-        android:paddingEnd="32dp"
-        android:paddingBottom="32dp">
+        android:paddingStart="24dp"
+        android:paddingEnd="24dp"
+        android:paddingBottom="40dp">
 
         <!-- 头部 -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="迷你视频"
-            android:textSize="28sp"
+            android:textSize="30sp"
             android:textColor="#D4AF37"
             android:textStyle="bold"
-            android:layout_marginTop="56dp" />
+            android:letterSpacing="0.04"
+            android:layout_marginTop="72dp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="VIP 视频权益"
             android:textSize="14sp"
-            android:textColor="#C084FC"
-            android:layout_marginBottom="32dp" />
+            android:textColor="#CFC3E6"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="36dp" />
 
         <!-- 账号 -->
         <EditText
             android:id="@+id/et_account"
             android:layout_width="match_parent"
-            android:layout_height="50dp"
+            android:layout_height="56dp"
             android:hint="输入账号 (手机号)"
             android:textColor="#F0E8FF"
-            android:textColorHint="#665588"
+            android:textColorHint="#A99BBD"
             android:background="@drawable/bg_input"
             android:paddingStart="16dp"
             android:paddingEnd="16dp"
             android:inputType="phone"
             android:singleLine="true"
-            android:layout_marginBottom="12dp" />
+            android:textSize="16sp"
+            android:layout_marginBottom="14dp" />
 
         <!-- 密码 -->
         <EditText
             android:id="@+id/et_password"
             android:layout_width="match_parent"
-            android:layout_height="50dp"
+            android:layout_height="56dp"
             android:hint="输入密码"
             android:textColor="#F0E8FF"
-            android:textColorHint="#665588"
+            android:textColorHint="#A99BBD"
             android:background="@drawable/bg_input"
             android:paddingStart="16dp"
             android:paddingEnd="16dp"
             android:inputType="textPassword"
             android:singleLine="true"
-            android:layout_marginBottom="12dp" />
+            android:textSize="16sp"
+            android:layout_marginBottom="14dp" />
 
         <!-- 权益码（必填） -->
         <EditText
             android:id="@+id/et_entitlement_code"
             android:layout_width="match_parent"
-            android:layout_height="50dp"
+            android:layout_height="56dp"
             android:hint="输入权益码 (8位数字，必填)"
             android:textColor="#F0E8FF"
-            android:textColorHint="#665588"
+            android:textColorHint="#A99BBD"
             android:background="@drawable/bg_input"
             android:paddingStart="16dp"
             android:paddingEnd="16dp"
             android:inputType="number"
             android:singleLine="true"
             android:maxLength="8"
-            android:layout_marginBottom="12dp" />
+            android:textSize="16sp"
+            android:layout_marginBottom="14dp" />
 
         <!-- 图形验证码 -->
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="50dp"
+            android:layout_height="56dp"
             android:orientation="horizontal"
             android:layout_marginBottom="24dp">
 
@@ -93,22 +98,24 @@
                 android:layout_weight="1"
                 android:hint="图形验证码"
                 android:textColor="#F0E8FF"
-                android:textColorHint="#665588"
+                android:textColorHint="#A99BBD"
                 android:background="@drawable/bg_input"
                 android:paddingStart="16dp"
                 android:paddingEnd="16dp"
                 android:inputType="text"
                 android:singleLine="true"
-                android:maxLength="6" />
+                android:maxLength="6"
+                android:textSize="16sp" />
 
             <ImageView
                 android:id="@+id/iv_captcha"
                 android:layout_width="110dp"
                 android:layout_height="match_parent"
                 android:layout_marginStart="8dp"
-                android:scaleType="fitXY"
+                android:scaleType="centerCrop"
                 android:contentDescription="验证码"
                 android:clickable="true"
+                android:focusable="true"
                 android:background="@drawable/bg_input" />
         </LinearLayout>
 
@@ -116,13 +123,15 @@
         <Button
             android:id="@+id/btn_login"
             android:layout_width="match_parent"
-            android:layout_height="50dp"
+            android:layout_height="56dp"
             android:text="登录 / 注册"
             android:textColor="#1A0A2E"
             android:textStyle="bold"
             android:textSize="16sp"
             android:background="@drawable/bg_button_gold"
-            android:layout_marginBottom="16dp" />
+            android:minHeight="56dp"
+            android:stateListAnimator="@null"
+            android:layout_marginBottom="18dp" />
 
         <!-- 提示 -->
         <TextView
@@ -130,7 +139,7 @@
             android:layout_height="wrap_content"
             android:text="账号不存在时将自动注册"
             android:textSize="12sp"
-            android:textColor="#665588" />
+            android:textColor="#A99BBD" />
 
         <!-- 版本号 -->
         <TextView
@@ -138,7 +147,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="11sp"
-            android:textColor="#443366"
+            android:textColor="#817392"
             android:layout_marginTop="24dp"
             android:text="v1.0" />
 

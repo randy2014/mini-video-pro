@@ -18,7 +18,7 @@
     <LinearLayout
         android:id="@+id/player_top_bar"
         android:layout_width="match_parent"
-        android:layout_height="48dp"
+        android:layout_height="56dp"
         android:layout_gravity="top"
         android:orientation="horizontal"
         android:gravity="center_vertical"
@@ -28,10 +28,11 @@
 
         <ImageView
             android:id="@+id/player_back"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
             android:src="@android:drawable/ic_menu_revert"
-            android:padding="8dp"
+            android:padding="12dp"
+            android:contentDescription="返回"
             android:tint="#FFFFFF" />
 
         <TextView
@@ -40,17 +41,18 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="视频播放"
-            android:textSize="14sp"
+            android:textSize="16sp"
             android:textColor="#FFFFFF"
             android:singleLine="true"
             android:ellipsize="end" />
 
         <ImageView
             android:id="@+id/player_fullscreen"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
             android:src="@android:drawable/ic_menu_crop"
-            android:padding="8dp"
+            android:padding="12dp"
+            android:contentDescription="切换全屏"
             android:tint="#FFFFFF" />
     </LinearLayout>
 
