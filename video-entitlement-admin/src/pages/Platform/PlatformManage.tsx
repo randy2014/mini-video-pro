@@ -105,6 +105,9 @@ export default function PlatformManage() {
           <Form.Item name="homeUrl" label="首页URL" rules={[{ required: true }, { type: 'url' }]}>
             <Input />
           </Form.Item>
+          <Form.Item name="logo" label="Logo图标链接" extra="可选，App卡片圆点将显示该图标">
+            <Input placeholder="https://..." />
+          </Form.Item>
           <Form.Item name="domains" label="域名（逗号分隔）">
             <Input placeholder="example.com, www.example.com" />
           </Form.Item>

@@ -41,6 +41,7 @@ public class PlatformService {
                 .platformName(request.getPlatformName())
                 .platformType(request.getPlatformType() != null ? request.getPlatformType() : "video")
                 .homeUrl(request.getHomeUrl())
+                .logo(request.getLogo())
                 .status(VideoPlatformStatus.ACTIVE.getCode())
                 .enabled(true)
                 .build();
@@ -56,6 +57,7 @@ public class PlatformService {
         if (request.getPlatformName() != null) platform.setPlatformName(request.getPlatformName());
         if (request.getPlatformType() != null) platform.setPlatformType(request.getPlatformType());
         if (request.getHomeUrl() != null) platform.setHomeUrl(request.getHomeUrl());
+        if (request.getLogo() != null) platform.setLogo(request.getLogo());
         platform = platformRepo.save(platform);
         if (request.getDomains() != null) {
             updateDomains(platform.getId(), request.getDomains());
@@ -96,6 +98,7 @@ public class PlatformService {
                 .platformName(p.getPlatformName())
                 .platformType(p.getPlatformType())
                 .homeUrl(p.getHomeUrl())
+                .logo(p.getLogo())
                 .status(p.getStatus())
                 .domains(domainList)
                 .build();

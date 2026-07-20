@@ -45,6 +45,7 @@ export interface VideoPlatform {
   platformName: string;
   platformType: string;
   homeUrl: string;
+  logo?: string;
   status: string;
   enabled: boolean;
   createdAt: string;
@@ -54,6 +55,7 @@ export interface PlatformConfigRequest {
   platformName: string;
   platformType: string;
   homeUrl: string;
+  logo?: string;
   domains?: string[];
 }
 

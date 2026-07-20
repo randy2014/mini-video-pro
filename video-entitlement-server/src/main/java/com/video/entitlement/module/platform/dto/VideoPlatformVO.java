@@ -17,6 +17,7 @@ public class VideoPlatformVO {
     private String platformName;
     private String platformType;
     private String homeUrl;
+    private String logo;
     private String status;
     private List<String> domains;
 }

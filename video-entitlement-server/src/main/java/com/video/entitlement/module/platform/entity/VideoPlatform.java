@@ -32,6 +32,9 @@ public class VideoPlatform {
     @Column(name = "home_url", length = 512)
     private String homeUrl;
 
+    @Column(name = "logo_url", length = 512)
+    private String logo;
+
     @Column(columnDefinition = "TEXT")
     private String description;
 
