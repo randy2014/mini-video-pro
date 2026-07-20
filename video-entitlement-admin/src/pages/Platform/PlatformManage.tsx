@@ -68,6 +68,16 @@ export default function PlatformManage() {
       title: '类型', dataIndex: 'platformType', key: 'platformType', width: 100,
       render: (v: string) => <Tag color={typeTagColors[v] || 'default'}>{typeLabels[v] || v || '视频网站'}</Tag>,
     },
+    {
+      title: 'Logo', dataIndex: 'logo', key: 'logo', width: 70,
+      render: (v: string) =>
+        v ? (
+          <img src={v} alt="logo" style={{ width: 36, height: 36, borderRadius: '50%', objectFit: 'cover', border: '1px solid #eee' }}
+            onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+        ) : (
+          <span style={{ color: '#ccc', fontSize: 12 }}>—</span>
+        ),
+    },
     { title: '首页URL', dataIndex: 'homeUrl', key: 'homeUrl', ellipsis: true },
     {
       title: '状态', dataIndex: 'status', key: 'status', width: 80,
