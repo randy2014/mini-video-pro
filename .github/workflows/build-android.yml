@@ -18,7 +18,9 @@ permissions:
 
 env:
   SERVER_HOST: 43.161.222.78
-  SERVER_USER: ubuntu
+  # 用 root：/data/video-apk 属主为 root（755），仅 root 可写；
+  # ubuntu 无写权限会 Permission denied。与项目原 build_and_deploy.sh（root@host）一致。
+  SERVER_USER: root
   DEPLOY_DIR: /data/video-apk
   DOMAIN: http://43.161.222.78:8082
   ANDROID_DIR: video-entitlement-android
