@@ -29,14 +29,22 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
                     android:gravity="center"
-                    android:paddingTop="56dp"
-                    android:paddingBottom="28dp"
+                    android:paddingTop="44dp"
+                    android:paddingBottom="24dp"
                     android:paddingStart="24dp"
                     android:paddingEnd="24dp">
+
+                    <ImageView
+                        android:layout_width="64dp"
+                        android:layout_height="64dp"
+                        android:contentDescription="视频权益应用图标"
+                        android:scaleType="fitCenter"
+                        android:src="@mipmap/ic_launcher" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
                         android:text="视频权益"
                         android:textSize="28sp"
                         android:textColor="#FFFFFF"
@@ -185,6 +193,14 @@
         android:orientation="vertical"
         android:background="@drawable/bg_home_gradient"
         android:visibility="visible">
+
+        <ImageView
+            android:layout_width="88dp"
+            android:layout_height="88dp"
+            android:layout_marginBottom="24dp"
+            android:contentDescription="视频权益应用图标"
+            android:scaleType="fitCenter"
+            android:src="@mipmap/ic_launcher" />
 
         <ProgressBar
             android:layout_width="40dp"
