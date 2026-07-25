@@ -147,7 +147,13 @@ class LoginActivity : AppCompatActivity() {
                 os.write(body.toString().toByteArray())
                 os.close()
 
-                val respJson = JSONObject(conn.inputStream.reader().readText())
+                val responseStream = if (conn.responseCode in 200..299) {
+                    conn.inputStream
+                } else {
+                    conn.errorStream
+                }
+                val responseText = responseStream?.bufferedReader()?.use { it.readText() }.orEmpty()
+                val respJson = if (responseText.isNotBlank()) JSONObject(responseText) else JSONObject()
                 val code = respJson.optInt("code", -1)
                 conn.disconnect()
 
@@ -163,7 +169,12 @@ class LoginActivity : AppCompatActivity() {
                         finish()
                     }
                 } else {
-                    val msg = respJson.optString("message", "登录失败")
+                    val detail = respJson.optString("message", "").trim()
+                    val msg = if (detail.isNotEmpty()) {
+                        "登录失败：$detail"
+                    } else {
+                        "登录失败，请检查填写信息后重试"
+                    }
                     runOnUiThread {
                         setLoading(false)
                         toast(msg)
@@ -172,10 +183,10 @@ class LoginActivity : AppCompatActivity() {
                 }
             } catch (e: Exception) {
                 val msg = when {
-                    e is java.net.ConnectException -> "无法连接服务器，请检查网络"
-                    e is java.net.SocketTimeoutException -> "连接超时，请重试"
-                    e is java.net.UnknownHostException -> "DNS解析失败，请检查网络"
-                    else -> "登录失败: ${e.message}"
+                    e is java.net.ConnectException -> "服务器连接失败，请检查网络后重试"
+                    e is java.net.SocketTimeoutException -> "登录请求超时，请稍后重试"
+                    e is java.net.UnknownHostException -> "网络连接异常，请检查网络设置"
+                    else -> "登录暂时失败，请稍后重试"
                 }
                 runOnUiThread {
                     setLoading(false)

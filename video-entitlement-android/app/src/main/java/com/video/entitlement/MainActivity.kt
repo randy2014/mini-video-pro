@@ -27,6 +27,7 @@ import org.json.JSONObject
 import java.io.File
 import java.net.HttpURLConnection
 import java.net.URL
+import java.util.concurrent.ConcurrentHashMap
 
 data class Platform(val name: String, val url: String, val type: String, val code: String, val logo: String)
 
@@ -65,7 +66,7 @@ class MainActivity : AppCompatActivity() {
         "video" to "视频网站", "music" to "音乐平台", "tv" to "电视直播", "drama" to "影视剧"
     )
 
-    private val logoCache = mutableMapOf<String, Bitmap>()
+    private val logoCache = ConcurrentHashMap<String, Bitmap>()
 
     @SuppressLint("SetJavaScriptEnabled")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -206,14 +207,6 @@ class MainActivity : AppCompatActivity() {
                         val logoUrl = p.optString("logo", "")
                         list.add(Platform(p.getString("platformName"), p.getString("homeUrl"), guessType(code), code, logoUrl))
                     }
-                    // 预加载 logo 到缓存
-                    for (plt in list) {
-                        if (plt.logo.isNotEmpty() && plt.code !in logoCache) {
-                            try {
-                                logoCache[plt.code] = BitmapFactory.decodeStream(URL(plt.logo).openStream())
-                            } catch (_: Exception) { }
-                        }
-                    }
                     platforms = list; ok = true
                 }
                 conn.disconnect()
@@ -343,31 +336,20 @@ class MainActivity : AppCompatActivity() {
             })
         }
 
-        // Logo 图标 / 品牌色圆点（有 logo 则显示图标，否则回落原色圆点）
-        val logo = logoCache[p.code]
-        val circle = if (logo != null) {
-            ImageView(this).apply {
-                layoutParams = LinearLayout.LayoutParams(dp(32), dp(32)).apply { bottomMargin = dp(10) }
-                scaleType = ImageView.ScaleType.CENTER_CROP
-                setImageBitmap(logo)
-                clipToOutline = true
-                addOnLayoutChangeListener(object : android.view.View.OnLayoutChangeListener {
-                    override fun onLayoutChange(v: View?, l: Int, t: Int, r: Int, b: Int, ol: Int, ot: Int, or: Int, ob: Int) {
-                        v?.outlineProvider = object : android.view.ViewOutlineProvider() {
-                            override fun getOutline(view: View, outline: Outline) {
-                                outline.setOval(0, 0, view.width, view.height)
-                            }
-                        }
-                        v?.removeOnLayoutChangeListener(this)
-                    }
-                })
+        // Logo 按接口 URL 异步加载；空值或失败时保留品牌色圆点
+        val circle = ImageView(this).apply {
+            layoutParams = LinearLayout.LayoutParams(dp(32), dp(32)).apply { bottomMargin = dp(10) }
+            scaleType = ImageView.ScaleType.CENTER_CROP
+            contentDescription = "${p.name} Logo"
+            background = GradientDrawable().apply { setColor(brand); shape = GradientDrawable.OVAL }
+            outlineProvider = object : android.view.ViewOutlineProvider() {
+                override fun getOutline(view: View, outline: Outline) {
+                    outline.setOval(0, 0, view.width, view.height)
+                }
             }
-        } else {
-            View(this).apply {
-                layoutParams = LinearLayout.LayoutParams(dp(32), dp(32)).apply { bottomMargin = dp(10) }
-                background = GradientDrawable().apply { setColor(brand); shape = GradientDrawable.OVAL }
-            }
+            clipToOutline = true
         }
+        loadPlatformLogo(p.logo, circle)
 
         // 名称
         val name = TextView(this).apply {
@@ -389,6 +371,35 @@ class MainActivity : AppCompatActivity() {
 
         card.addView(dots); card.addView(circle); card.addView(name); card.addView(tag)
         return card
+    }
+
+    private fun loadPlatformLogo(logoUrl: String, target: ImageView) {
+        if (logoUrl.isBlank()) return
+        target.tag = logoUrl
+
+        logoCache[logoUrl]?.let {
+            target.setImageBitmap(it)
+            return
+        }
+
+        Thread {
+            var conn: HttpURLConnection? = null
+            try {
+                conn = URL(logoUrl).openConnection() as HttpURLConnection
+                conn.connectTimeout = 5000
+                conn.readTimeout = 5000
+                conn.instanceFollowRedirects = true
+                val bitmap = conn.inputStream.use { BitmapFactory.decodeStream(it) } ?: return@Thread
+                logoCache[logoUrl] = bitmap
+                runOnUiThread {
+                    if (target.tag == logoUrl) target.setImageBitmap(bitmap)
+                }
+            } catch (_: Exception) {
+                // 保留品牌色圆点作为图片加载失败的视觉回退
+            } finally {
+                conn?.disconnect()
+            }
+        }.start()
     }
 
     private fun openPlatform(p: Platform) {
