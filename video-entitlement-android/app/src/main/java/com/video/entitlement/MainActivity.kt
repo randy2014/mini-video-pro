@@ -538,7 +538,7 @@ class MainActivity : AppCompatActivity() {
                 if (serverCode > localCode && downloadUrl.isNotEmpty()) {
                     runOnUiThread { showUpdateDialog(serverName, notes, downloadUrl, force) }
                 }
-            } catch (_: Exception) { /* 版本检查静默失败 */ }
+            } catch (e: Exception) { e.printStackTrace() }
         }.start()
     }
 
