@@ -13,6 +13,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -27,6 +28,7 @@ public class UserManageController {
 
     private final UserAccountRepository userAccountRepository;
     private final UserEntitlementRepository userEntitlementRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Operation(summary = "用户列表")
     @GetMapping
@@ -80,6 +82,16 @@ public class UserManageController {
         UserAccount user = userAccountRepository.findById(id)
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
         user.setStatus(status);
+        userAccountRepository.save(user);
+        return ApiResponse.success(null);
+    }
+
+    @Operation(summary = "重置用户密码")
+    @PutMapping("/{id}/reset-password")
+    public ApiResponse<?> resetPassword(@PathVariable Long id) {
+        UserAccount user = userAccountRepository.findById(id)
+                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+        user.setPassword(passwordEncoder.encode("00000000"));
         userAccountRepository.save(user);
         return ApiResponse.success(null);
     }

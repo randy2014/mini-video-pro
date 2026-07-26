@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Table, Button, Input, Space, Popconfirm, message, Tag } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
-import { getUsers, updateUserStatus } from '../../services/user';
+import { getUsers, updateUserStatus, resetUserPassword } from '../../services/user';
 import type { UserVO } from '../../types/api';
 import dayjs from 'dayjs';
 
@@ -60,11 +60,19 @@ export default function UserManage() {
     { title: '最后登录', dataIndex: 'lastLoginAt', width: 140, render: (s: string) => fmt(s) },
     { title: '注册时间', dataIndex: 'createdAt', width: 140, render: (s: string) => fmt(s) },
     {
-      title: '操作', width: 100,
+      title: '操作', width: 180,
       render: (_: unknown, record: UserVO) => (
-        <Popconfirm title={`确认${record.status === 'ACTIVE' ? '禁用' : '启用'}？`} onConfirm={() => toggleStatus(record)}>
-          <Button size="small" danger={record.status === 'ACTIVE'}>{record.status === 'ACTIVE' ? '禁用' : '启用'}</Button>
-        </Popconfirm>
+        <Space>
+          <Popconfirm title={`确认${record.status === 'ACTIVE' ? '禁用' : '启用'}？`} onConfirm={() => toggleStatus(record)}>
+            <Button size="small" danger={record.status === 'ACTIVE'}>{record.status === 'ACTIVE' ? '禁用' : '启用'}</Button>
+          </Popconfirm>
+          <Popconfirm title="确认重置密码为 00000000？" onConfirm={async () => {
+            await resetUserPassword(record.id);
+            message.success('密码已重置为 00000000');
+          }}>
+            <Button size="small">重置密码</Button>
+          </Popconfirm>
+        </Space>
       ),
     },
   ];
