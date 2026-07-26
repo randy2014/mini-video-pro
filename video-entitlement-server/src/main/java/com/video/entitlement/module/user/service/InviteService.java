@@ -70,6 +70,6 @@ public class InviteService {
             String code = sb.toString();
             if (codeRepo.findByCode(code).isEmpty()) return code;
         }
-        throw new BusinessException(ErrorCode.INTERNAL_ERROR, "生成邀请码失败，请重试");
+        throw new BusinessException(ErrorCode.SYSTEM_ERROR, "生成邀请码失败，请重试");
     }
 }
