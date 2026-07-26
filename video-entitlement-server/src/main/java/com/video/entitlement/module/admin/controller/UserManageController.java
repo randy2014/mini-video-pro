@@ -8,6 +8,10 @@ import com.video.entitlement.module.user.entity.UserAccount;
 import com.video.entitlement.module.user.entity.enums.UserStatus;
 import com.video.entitlement.module.user.repository.UserAccountRepository;
 import com.video.entitlement.module.entitlement.repository.UserEntitlementRepository;
+import com.video.entitlement.module.device.repository.UserDeviceRepository;
+import com.video.entitlement.module.user.repository.UserLoginLogRepository;
+import com.video.entitlement.module.user.repository.InviteCodeRepository;
+import com.video.entitlement.module.risk.repository.RiskEventRepository;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +32,10 @@ public class UserManageController {
 
     private final UserAccountRepository userAccountRepository;
     private final UserEntitlementRepository userEntitlementRepository;
+    private final UserDeviceRepository userDeviceRepository;
+    private final UserLoginLogRepository userLoginLogRepository;
+    private final InviteCodeRepository inviteCodeRepository;
+    private final RiskEventRepository riskEventRepository;
     private final PasswordEncoder passwordEncoder;
 
     @Operation(summary = "用户列表")
@@ -96,14 +104,19 @@ public class UserManageController {
         return ApiResponse.success(null);
     }
 
-    @Operation(summary = "删除用户（软删除）")
+    @Operation(summary = "删除用户（物理删除，同时清理关联数据）")
     @DeleteMapping("/{id}")
+    @org.springframework.transaction.annotation.Transactional
     public ApiResponse<?> delete(@PathVariable Long id) {
         UserAccount user = userAccountRepository.findById(id)
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
-        user.setStatus("CANCELLED");
-        user.setDeletedAt(LocalDateTime.now());
-        userAccountRepository.save(user);
+        // 清理所有关联数据
+        userEntitlementRepository.deleteByUserId(id);
+        userDeviceRepository.deleteByUserId(id);
+        userLoginLogRepository.deleteByUserId(id);
+        inviteCodeRepository.deleteByUserId(id);
+        riskEventRepository.deleteByUserId(id);
+        userAccountRepository.delete(user);
         return ApiResponse.success(null);
     }
 }

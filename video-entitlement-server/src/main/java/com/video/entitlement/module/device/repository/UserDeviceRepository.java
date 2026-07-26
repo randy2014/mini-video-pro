@@ -3,6 +3,7 @@ package com.video.entitlement.module.device.repository;
 import com.video.entitlement.module.device.entity.UserDevice;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -15,4 +16,6 @@ public interface UserDeviceRepository extends JpaRepository<UserDevice, Long> {
     List<UserDevice> findByUserId(Long userId);
 
     long countByUserIdAndStatus(Long userId, String status);
+
+    @Transactional void deleteByUserId(Long userId);
 }
