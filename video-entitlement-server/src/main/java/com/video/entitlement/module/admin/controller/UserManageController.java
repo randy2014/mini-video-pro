@@ -95,4 +95,15 @@ public class UserManageController {
         userAccountRepository.save(user);
         return ApiResponse.success(null);
     }
+
+    @Operation(summary = "删除用户（软删除）")
+    @DeleteMapping("/{id}")
+    public ApiResponse<?> delete(@PathVariable Long id) {
+        UserAccount user = userAccountRepository.findById(id)
+                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+        user.setStatus("CANCELLED");
+        user.setDeletedAt(LocalDateTime.now());
+        userAccountRepository.save(user);
+        return ApiResponse.success(null);
+    }
 }

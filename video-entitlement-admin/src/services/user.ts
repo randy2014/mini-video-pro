@@ -12,3 +12,6 @@ export const updateUserStatus = (id: number, status: string) =>
 
 export const resetUserPassword = (id: number) =>
   request.put<ApiResponse<null>>(`/admin/api/v1/users/${id}/reset-password`).then(r => r.data);
+
+export const deleteUser = (id: number) =>
+  request.delete<ApiResponse<null>>(`/admin/api/v1/users/${id}`).then(r => r.data);
