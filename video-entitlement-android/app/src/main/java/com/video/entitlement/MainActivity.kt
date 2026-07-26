@@ -97,6 +97,7 @@ class MainActivity : AppCompatActivity() {
                 Context.RECEIVER_EXPORTED)
             fetchPlatforms()
             fetchInviteCode()
+            checkEntitlementExpiry()
         } catch (e: Exception) {
             showError("启动失败: ${e.message}")
         }
@@ -476,6 +477,34 @@ class MainActivity : AppCompatActivity() {
             textSize = 16f; setTextColor(0xFFE94560.toInt())
             setBackgroundColor(0xFF1A0A2E.toInt())
         })
+    }
+
+    private fun checkEntitlementExpiry() {
+        try {
+            val jsonStr = getSharedPreferences("auth", MODE_PRIVATE).getString("entitlements", null) ?: return
+            val arr = org.json.JSONArray(jsonStr)
+            val soon = mutableListOf<String>()
+            val now = System.currentTimeMillis()
+            val threeDays = 3L * 24 * 3600 * 1000
+            for (i in 0 until arr.length()) {
+                val e = arr.getJSONObject(i)
+                val expTime = e.optString("expireTime", "")
+                if (expTime.isEmpty()) continue // 永久
+                val expMs = try { java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", java.util.Locale.US).parse(expTime)?.time ?: 0 } catch (_: Exception) { 0L }
+                if (expMs > 0 && expMs - now < threeDays && expMs > now) {
+                    soon.add(e.getString("entitlementCode"))
+                }
+            }
+            if (soon.isNotEmpty()) {
+                runOnUiThread {
+                    AlertDialog.Builder(this)
+                        .setTitle("权益即将到期")
+                        .setMessage("以下权益将在 3 天内到期：\n${soon.joinToString("\n")}\n\n请及时续费以免影响使用")
+                        .setPositiveButton("知道了", null)
+                        .show()
+                }
+            }
+        } catch (_: Exception) { }
     }
 
     private fun toast(msg: String) {

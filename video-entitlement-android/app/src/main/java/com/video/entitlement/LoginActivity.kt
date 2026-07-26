@@ -161,6 +161,12 @@ class LoginActivity : AppCompatActivity() {
                     val data = respJson.getJSONObject("data")
                     val token = data.getString("accessToken")
                     val refresh = data.optString("refreshToken", "")
+                    // 权益到期信息(存JSON供首页提醒)
+                    val entArray = data.optJSONArray("entitlements")
+                    if (entArray != null) {
+                        getSharedPreferences(PREFS_NAME, MODE_PRIVATE).edit()
+                            .putString("entitlements", entArray.toString()).apply()
+                    }
                     saveAuth(token, refresh, mobile)
 
                     runOnUiThread {

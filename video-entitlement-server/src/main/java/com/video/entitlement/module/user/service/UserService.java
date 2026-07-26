@@ -24,8 +24,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -76,11 +78,22 @@ public class UserService {
         String accessToken = jwtTokenProvider.generateAccessToken(user.getId(), user.getUserNo(), role, null);
         String refreshToken = jwtTokenProvider.generateRefreshToken(user.getId(), user.getUserNo(), role);
 
+        // 查询用户权益到期信息（供 App 到期提醒）
+        var entitlements = userEntitlementRepository.findByUserId(user.getId()).stream()
+                .filter(ue -> "ACTIVE".equals(ue.getStatus()))
+                .map(ue -> AuthResponse.EntitlementInfo.builder()
+                        .entitlementCode(ue.getEntitlementCode())
+                        .expireTime(ue.getExpireTime())
+                        .build())
+                .collect(Collectors.toList());
+
         return AuthResponse.builder()
                 .accessToken(accessToken).refreshToken(refreshToken)
                 .user(UserVO.builder().userNo(user.getUserNo()).nickname(user.getNickname())
                         .mobile(user.getMobile()).status(user.getStatus()).riskLevel(user.getRiskLevel()).build())
-                .expiresIn(jwtTokenProvider.getAccessExpirationMs() / 1000).build();
+                .expiresIn(jwtTokenProvider.getAccessExpirationMs() / 1000)
+                .entitlements(entitlements)
+                .build();
     }
 
     public AuthResponse refresh(RefreshTokenRequest request) {
