@@ -460,7 +460,11 @@ class MainActivity : AppCompatActivity() {
             .setTitle("退出登录")
             .setMessage("确定要退出登录吗？")
             .setPositiveButton("确定") { _, _ ->
-                getSharedPreferences("auth", MODE_PRIVATE).edit().clear().apply()
+                // 只清除 token，保留手机号/密码/权益码供下次自动填充
+                getSharedPreferences("auth", MODE_PRIVATE).edit()
+                    .remove("access_token")
+                    .remove("refresh_token")
+                    .apply()
                 logoCache.clear()
                 startActivity(Intent(this, LoginActivity::class.java))
                 finish()

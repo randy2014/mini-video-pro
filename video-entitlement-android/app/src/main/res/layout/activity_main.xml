@@ -234,10 +234,15 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="退出登录"
-                    android:textSize="12sp"
-                    android:textColor="#E94560"
+                    android:textSize="14sp"
+                    android:textColor="#FFFFFF"
                     android:gravity="center"
-                    android:paddingBottom="48dp"
+                    android:paddingTop="12dp"
+                    android:paddingBottom="12dp"
+                    android:layout_marginStart="32dp"
+                    android:layout_marginEnd="32dp"
+                    android:layout_marginBottom="48dp"
+                    android:background="@drawable/bg_play_btn"
                     android:clickable="true"
                     android:focusable="true" />
             </LinearLayout>
