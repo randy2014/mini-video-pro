@@ -124,10 +124,7 @@ class MainActivity : AppCompatActivity() {
     private fun showVersion() {
         try {
             val info = packageManager.getPackageInfo(packageName, 0)
-            val vName = info.versionName ?: "1.0"
-            val vCode = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P)
-                info.longVersionCode else info.versionCode.toLong()
-            findViewById<TextView>(R.id.version_text)?.text = "v$vName ($vCode)"
+            findViewById<TextView>(R.id.version_text)?.text = "v${info.versionName ?: "1.0"}"
         } catch (_: Exception) { }
     }
 
