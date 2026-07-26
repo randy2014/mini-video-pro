@@ -143,8 +143,7 @@ export default function AppVersionManage() {
   };
 
   const columns = [
-    { title: '版本名', dataIndex: 'versionName', key: 'versionName', width: 140 },
-    { title: '版本号', dataIndex: 'versionCode', key: 'versionCode', width: 100, render: (v: number) => `v${v}` },
+    { title: '版本', dataIndex: 'versionName', key: 'versionName', width: 180, render: (v: string) => `v${v}` },
     {
       title: '下载地址', dataIndex: 'downloadUrl', key: 'downloadUrl', ellipsis: true,
       render: (url: string) => url
