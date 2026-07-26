@@ -179,7 +179,20 @@
                     android:textSize="11sp"
                     android:textColor="#817392"
                     android:gravity="center"
-                    android:paddingBottom="48dp" />
+                    android:paddingBottom="8dp" />
+
+                <!-- 退出登录 -->
+                <TextView
+                    android:id="@+id/logout_btn"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="退出登录"
+                    android:textSize="12sp"
+                    android:textColor="#E94560"
+                    android:gravity="center"
+                    android:paddingBottom="48dp"
+                    android:clickable="true"
+                    android:focusable="true" />
             </LinearLayout>
         </ScrollView>
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
@@ -261,6 +274,18 @@
                 android:textStyle="bold"
                 android:paddingStart="6dp"
                 android:paddingEnd="6dp" />
+
+            <TextView
+                android:id="@+id/refresh_btn"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:text="↻"
+                android:textSize="22sp"
+                android:textColor="#FFFFFF"
+                android:gravity="center"
+                android:contentDescription="刷新"
+                android:focusable="true"
+                android:background="?attr/selectableItemBackgroundBorderless" />
         </LinearLayout>
 
         <!-- 进度条 -->

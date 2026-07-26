@@ -135,6 +135,8 @@ class MainActivity : AppCompatActivity() {
         swipeRefresh = findViewById(R.id.swipe_refresh)
         loadingOverlay = findViewById(R.id.loading_overlay)
         loadingText = findViewById(R.id.loading_text)
+        val refreshBtn = findViewById<TextView>(R.id.refresh_btn)
+        val logoutBtn = findViewById<TextView>(R.id.logout_btn)
 
         swipeRefresh?.setOnRefreshListener { fetchPlatforms() }
         swipeRefresh?.setColorSchemeColors(0xFF7C5CBF.toInt())
@@ -142,6 +144,8 @@ class MainActivity : AppCompatActivity() {
         backBtn?.setOnClickListener {
             if (browserContainer?.visibility == View.VISIBLE) showHome()
         }
+        refreshBtn?.setOnClickListener { webView?.reload() }
+        logoutBtn?.setOnClickListener { doLogout() }
     }
 
     @SuppressLint("SetJavaScriptEnabled")
@@ -423,6 +427,20 @@ class MainActivity : AppCompatActivity() {
             homeContainer?.visibility = View.VISIBLE
             webView?.stopLoading(); webView?.loadUrl("about:blank")
         } catch (_: Exception) { }
+    }
+
+    private fun doLogout() {
+        AlertDialog.Builder(this)
+            .setTitle("退出登录")
+            .setMessage("确定要退出登录吗？")
+            .setPositiveButton("确定") { _, _ ->
+                getSharedPreferences("auth", MODE_PRIVATE).edit().clear().apply()
+                logoCache.clear()
+                startActivity(Intent(this, LoginActivity::class.java))
+                finish()
+            }
+            .setNegativeButton("取消", null)
+            .show()
     }
 
     private fun showError(msg: String) {
