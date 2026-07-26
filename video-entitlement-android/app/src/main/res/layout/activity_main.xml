@@ -160,6 +160,53 @@
                     </LinearLayout>
                 </LinearLayout>
 
+                <!-- 邀请裂变 -->
+                <LinearLayout
+                    android:id="@+id/invite_card"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginBottom="10dp"
+                    android:padding="12dp"
+                    android:background="@drawable/bg_stat_card"
+                    android:visibility="gone">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="🎁 邀请好友，双方各得 3 天"
+                        android:textSize="13sp"
+                        android:textColor="#D4AF37" />
+
+                    <TextView
+                        android:id="@+id/invite_code_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="--------"
+                        android:textSize="13sp"
+                        android:textColor="#FFFFFF"
+                        android:textStyle="bold"
+                        android:paddingStart="8dp"
+                        android:paddingEnd="8dp" />
+
+                    <TextView
+                        android:id="@+id/copy_btn"
+                        android:layout_width="48dp"
+                        android:layout_height="32dp"
+                        android:text="复制"
+                        android:textSize="12sp"
+                        android:textColor="#FFFFFF"
+                        android:gravity="center"
+                        android:background="@drawable/bg_tag_video"
+                        android:clickable="true"
+                        android:focusable="true" />
+                </LinearLayout>
+
                 <!-- 平台容器 (纯动态填充) -->
                 <LinearLayout
                     android:id="@+id/platform_container"

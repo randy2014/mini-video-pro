@@ -46,6 +46,9 @@ class MainActivity : AppCompatActivity() {
     private var errorPage: View? = null
     private var errorMsg: TextView? = null
     private var retryBtn: TextView? = null
+    private var inviteCard: View? = null
+    private var inviteCodeText: TextView? = null
+    private var copyBtn: TextView? = null
 
     private var currentUrl = ""
     private var currentTitle = ""
@@ -93,6 +96,7 @@ class MainActivity : AppCompatActivity() {
             registerReceiver(downloadReceiver, IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE),
                 Context.RECEIVER_EXPORTED)
             fetchPlatforms()
+            fetchInviteCode()
         } catch (e: Exception) {
             showError("启动失败: ${e.message}")
         }
@@ -141,6 +145,9 @@ class MainActivity : AppCompatActivity() {
         errorPage = findViewById(R.id.error_page)
         errorMsg = findViewById(R.id.error_msg)
         retryBtn = findViewById(R.id.retry_btn)
+        inviteCard = findViewById(R.id.invite_card)
+        inviteCodeText = findViewById(R.id.invite_code_text)
+        copyBtn = findViewById(R.id.copy_btn)
         val refreshBtn = findViewById<TextView>(R.id.refresh_btn)
         val logoutBtn = findViewById<TextView>(R.id.logout_btn)
 
@@ -157,6 +164,12 @@ class MainActivity : AppCompatActivity() {
             webView?.reload()
         }
         logoutBtn?.setOnClickListener { doLogout() }
+        copyBtn?.setOnClickListener {
+            val code = inviteCodeText?.text?.toString() ?: return@setOnClickListener
+            val clipboard = getSystemService(CLIPBOARD_SERVICE) as android.content.ClipboardManager
+            clipboard.setPrimaryClip(android.content.ClipData.newPlainText("invite", code))
+            toast("邀请码已复制: $code")
+        }
     }
 
     @SuppressLint("SetJavaScriptEnabled")
@@ -466,6 +479,28 @@ class MainActivity : AppCompatActivity() {
 
     private fun toast(msg: String) {
         try { Toast.makeText(this, msg, Toast.LENGTH_SHORT).show() } catch (_: Exception) { }
+    }
+
+    private fun fetchInviteCode() {
+        val token = getSharedPreferences("auth", MODE_PRIVATE).getString("access_token", null) ?: return
+        Thread {
+            try {
+                val conn = URL("$API_BASE/api/v1/client/invite/code").openConnection() as HttpURLConnection
+                conn.setRequestProperty("Authorization", "Bearer $token")
+                conn.connectTimeout = 8000; conn.readTimeout = 8000
+                val body = conn.inputStream.reader().readText()
+                conn.disconnect()
+                val json = org.json.JSONObject(body)
+                val data = json.optJSONObject("data") ?: return@Thread
+                val code = data.optString("code", "")
+                if (code.isNotEmpty()) {
+                    runOnUiThread {
+                        inviteCodeText?.text = code
+                        inviteCard?.visibility = View.VISIBLE
+                    }
+                }
+            } catch (_: Exception) { }
+        }.start()
     }
 
     private fun dp(v: Int): Int = (v * dp1 + 0.5f).toInt()
