@@ -1,6 +1,7 @@
 import axios, { AxiosError, InternalAxiosRequestConfig } from 'axios';
 import { message } from 'antd';
 import type { ApiResponse } from '../types/api';
+import { useAuthStore } from '../stores/auth';
 
 const request = axios.create({
   baseURL: '',
@@ -26,8 +27,7 @@ request.interceptors.response.use(
   },
   (error: AxiosError<ApiResponse>) => {
     if (error.response?.status === 401) {
-      localStorage.removeItem('adminToken');
-      localStorage.removeItem('adminUser');
+      useAuthStore.getState().clearAuth();
       window.location.href = '/login';
       return Promise.reject(error);
     }
