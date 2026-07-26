@@ -304,6 +304,47 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1" />
+
+        <!-- WebView 错误页 -->
+        <LinearLayout
+            android:id="@+id/error_page"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:visibility="gone"
+            android:background="#1A0A2E">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="⚠"
+                android:textSize="48sp"
+                android:textColor="#D4AF37" />
+
+            <TextView
+                android:id="@+id/error_msg"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="页面加载失败"
+                android:textSize="16sp"
+                android:textColor="#CFC3E6"
+                android:layout_marginTop="16dp" />
+
+            <TextView
+                android:id="@+id/retry_btn"
+                android:layout_width="160dp"
+                android:layout_height="44dp"
+                android:text="重新加载"
+                android:textSize="14sp"
+                android:textColor="#FFFFFF"
+                android:gravity="center"
+                android:layout_marginTop="24dp"
+                android:background="@drawable/bg_play_btn"
+                android:clickable="true"
+                android:focusable="true" />
+        </LinearLayout>
     </LinearLayout>
 
 </FrameLayout>

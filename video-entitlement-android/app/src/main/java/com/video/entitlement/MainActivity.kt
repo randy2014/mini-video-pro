@@ -43,6 +43,9 @@ class MainActivity : AppCompatActivity() {
     private var swipeRefresh: SwipeRefreshLayout? = null
     private var loadingOverlay: View? = null
     private var loadingText: TextView? = null
+    private var errorPage: View? = null
+    private var errorMsg: TextView? = null
+    private var retryBtn: TextView? = null
 
     private var currentUrl = ""
     private var currentTitle = ""
@@ -135,6 +138,9 @@ class MainActivity : AppCompatActivity() {
         swipeRefresh = findViewById(R.id.swipe_refresh)
         loadingOverlay = findViewById(R.id.loading_overlay)
         loadingText = findViewById(R.id.loading_text)
+        errorPage = findViewById(R.id.error_page)
+        errorMsg = findViewById(R.id.error_msg)
+        retryBtn = findViewById(R.id.retry_btn)
         val refreshBtn = findViewById<TextView>(R.id.refresh_btn)
         val logoutBtn = findViewById<TextView>(R.id.logout_btn)
 
@@ -145,6 +151,11 @@ class MainActivity : AppCompatActivity() {
             if (browserContainer?.visibility == View.VISIBLE) showHome()
         }
         refreshBtn?.setOnClickListener { webView?.reload() }
+        retryBtn?.setOnClickListener {
+            errorPage?.visibility = View.GONE
+            webView?.visibility = View.VISIBLE
+            webView?.reload()
+        }
         logoutBtn?.setOnClickListener { doLogout() }
     }
 
@@ -169,6 +180,7 @@ class MainActivity : AppCompatActivity() {
             wv.webViewClient = object : WebViewClient() {
                 override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
                     progressBar?.visibility = View.VISIBLE; if (url != null) currentUrl = url
+                    errorPage?.visibility = View.GONE; webView?.visibility = View.VISIBLE
                 }
                 override fun onPageFinished(view: WebView?, url: String?) {
                     progressBar?.visibility = View.GONE
@@ -177,7 +189,10 @@ class MainActivity : AppCompatActivity() {
                 override fun shouldOverrideUrlLoading(v: WebView?, r: WebResourceRequest?) = false
                 override fun onReceivedError(v: WebView?, r: WebResourceRequest?, e: WebResourceError?) {
                     progressBar?.visibility = View.GONE
-                    titleText?.text = "\u26A0 ${e?.description ?: "加载失败"}"
+                    val msg = e?.description?.toString()?.takeIf { it.isNotEmpty() } ?: "页面加载失败"
+                    errorMsg?.text = msg
+                    errorPage?.visibility = View.VISIBLE
+                    webView?.visibility = View.GONE
                 }
             }
             wv.webChromeClient = object : WebChromeClient() {
