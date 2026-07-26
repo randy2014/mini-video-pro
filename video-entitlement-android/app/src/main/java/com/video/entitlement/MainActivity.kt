@@ -160,8 +160,6 @@ class MainActivity : AppCompatActivity() {
                 setSupportZoom(true); builtInZoomControls = true; displayZoomControls = false
                 allowFileAccess = true; allowContentAccess = true
                 cacheMode = WebSettings.LOAD_CACHE_ELSE_NETWORK
-                setAppCacheEnabled(true)
-                setAppCachePath(cacheDir.resolve("webview_cache").also { it.mkdirs() }.absolutePath)
                 databaseEnabled = true
                 userAgentString = "Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.6099.144 Mobile Safari/537.36"
                 setGeolocationEnabled(true); setSupportMultipleWindows(false)
