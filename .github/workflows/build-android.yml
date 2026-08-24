@@ -17,12 +17,13 @@ permissions:
   contents: read
 
 env:
-  SERVER_HOST: 43.161.222.78
+  SERVER_HOST: 64.90.19.6
+  SERVER_PORT: 52527
   # 用 root：/data/video-apk 属主为 root（755），仅 root 可写；
   # ubuntu 无写权限会 Permission denied。与项目原 build_and_deploy.sh（root@host）一致。
   SERVER_USER: root
   DEPLOY_DIR: /data/video-apk
-  DOMAIN: http://43.161.222.78:8082
+  DOMAIN: http://64.90.19.6:8082
   ANDROID_DIR: video-entitlement-android
 
 jobs:
@@ -106,12 +107,13 @@ jobs:
           APK_NAME="${{ steps.meta.outputs.apk_name }}"
           QR_NAME="${{ steps.meta.outputs.qr_name }}"
           HOST="${{ env.SERVER_HOST }}"
+          PORT="${{ env.SERVER_PORT }}"
           USER="${{ env.SERVER_USER }}"
           DIR="${{ env.DEPLOY_DIR }}"
-          scp -i /tmp/video_key -o StrictHostKeyChecking=no "$APK" "$USER@$HOST:$DIR/$APK_NAME"
-          scp -i /tmp/video_key -o StrictHostKeyChecking=no "$APK" "$USER@$HOST:$DIR/video-entitlement-latest.apk"
-          scp -i /tmp/video_key -o StrictHostKeyChecking=no "$QR_NAME" "$USER@$HOST:$DIR/"
-          scp -i /tmp/video_key -o StrictHostKeyChecking=no "qr-download-latest.png" "$USER@$HOST:$DIR/"
+          scp -P "$PORT" -i /tmp/video_key -o StrictHostKeyChecking=no "$APK" "$USER@$HOST:$DIR/$APK_NAME"
+          scp -P "$PORT" -i /tmp/video_key -o StrictHostKeyChecking=no "$APK" "$USER@$HOST:$DIR/video-entitlement-latest.apk"
+          scp -P "$PORT" -i /tmp/video_key -o StrictHostKeyChecking=no "$QR_NAME" "$USER@$HOST:$DIR/"
+          scp -P "$PORT" -i /tmp/video_key -o StrictHostKeyChecking=no "qr-download-latest.png" "$USER@$HOST:$DIR/"
           rm -f /tmp/video_key
           echo "::notice::DOWNLOAD_URL=${{ env.DOMAIN }}/downloads/${APK_NAME}"
           echo "::notice::QR_URL=${{ env.DOMAIN }}/downloads/${QR_NAME}"
