@@ -13,8 +13,9 @@ env:
   REGISTRY: ghcr.io
   BACKEND_IMAGE: ghcr.io/randy2014/mini-video-pro-backend
   FRONTEND_IMAGE: ghcr.io/randy2014/mini-video-pro-frontend
-  SERVER_HOST: 43.161.222.78
-  SERVER_USER: ubuntu
+  SERVER_HOST: 64.90.19.6
+  SERVER_PORT: 52527
+  SERVER_USER: root
 
 jobs:
   backend:
@@ -88,6 +89,7 @@ jobs:
         uses: appleboy/ssh-action@v1
         with:
           host: ${{ env.SERVER_HOST }}
+          port: ${{ env.SERVER_PORT }}
           username: ${{ env.SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
@@ -128,7 +130,7 @@ jobs:
               -e ENTITLEMENT_HMAC_KEY=${{ secrets.ENTITLEMENT_HMAC_KEY }} \
               -e SWAGGER_ENABLED=false \
               -e APP_APK_DIR=/data/video-apk \
-              -e APP_DOWNLOAD_BASE=http://43.161.222.78:8082/downloads \
+              -e APP_DOWNLOAD_BASE=http://64.90.19.6:8082/downloads \
               -v /data/video-apk:/data/video-apk \
               ${{ env.BACKEND_IMAGE }}:latest
             
