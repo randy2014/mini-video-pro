@@ -480,8 +480,8 @@ class MainActivity : AppCompatActivity() {
 
         // 类型标签
         val tag = TextView(this).apply {
-            text = typeLabels[p.type] ?: ""; textSize = 12f; setTextColor(0xFF07C160.toInt())
-            setPadding(dp(10), dp(4), dp(10), dp(4))
+            text = typeLabels[p.type] ?: ""; textSize = 14f; setTextColor(0xFF07C160.toInt())
+            setPadding(dp(12), dp(6), dp(12), dp(6))
             layoutParams = LinearLayout.LayoutParams(WRAP, WRAP).apply { topMargin = dp(8) }
             background = GradientDrawable().apply {
                 setColor(0xFFE8F8EE.toInt()); cornerRadius = dp(8).toFloat()
