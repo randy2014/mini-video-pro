@@ -3,9 +3,8 @@ import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { Layout, Menu, Button, Dropdown, theme } from 'antd';
 import {
   DashboardOutlined, UserOutlined, GlobalOutlined,
-  SafetyOutlined, SettingOutlined, LogoutOutlined,
-  MenuFoldOutlined, MenuUnfoldOutlined, CrownOutlined, TeamOutlined,
-  CloudUploadOutlined,
+  LogoutOutlined, MenuFoldOutlined, MenuUnfoldOutlined,
+  CrownOutlined, TeamOutlined, CloudUploadOutlined,
 } from '@ant-design/icons';
 import { useAuthStore } from '../stores/auth';
 
@@ -21,8 +20,6 @@ const menuItems = [
   { key: 'platform', icon: <GlobalOutlined />, label: '平台管理', children: [
     { key: '/platform', label: '平台配置' },
   ]},
-  { key: 'risk', icon: <SafetyOutlined />, label: '风控管理' },
-  { key: 'config', icon: <SettingOutlined />, label: '配置发布' },
   { key: '/app-versions', icon: <CloudUploadOutlined />, label: 'APP版本管理' },
 ];
 

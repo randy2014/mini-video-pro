@@ -27,17 +27,15 @@
 - video-entitlement-admin: React + TypeScript + Ant Design + Vite
 - video-entitlement-android: Kotlin + XML + ExoPlayer + WebView
 
-## 业务模块（以当前代码为准，共 8 个）
+## 业务模块（以当前代码为准，共 6 个）
 - 平台管理 (platform): 支持 video/music/tv/drama 类型, 编辑/删除 + APP 版本发布
 - 管理员管理 (admin): 认证/角色/权限/操作日志 + 用户管理
 - 用户管理 (user): 登录/注册/邀请码/验证码
 - 权益管理 (entitlement): 权益码生成/兑换
 - 设备管理 (device): 设备绑定/状态
-- 风控管理 (risk): 限流/黑名单/风险事件
-- 配置发布 (configrelease): 配置版本/发布
 - 统计 (stats)
 
-> 已删除模块: 播放路由 (playback)、健康监控 (health)。注意 `application.yml` 仍残留 `app.playback.*` 配置段，属历史遗留，可清理。
+> 已删除模块: 播放路由 (playback)、健康监控 (health)、风控管理 (risk)、配置发布 (configrelease)。注意 `application.yml` 仍残留 `app.playback.*` 配置段，属历史遗留，可清理。
 
 ## Android APK
 - 版本: v1.2 (versionCode 3)

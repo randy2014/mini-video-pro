@@ -4,8 +4,6 @@ import LoginPage from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import AdminUsers from './pages/Admin/AdminUsers';
 import PlatformManage from './pages/Platform/PlatformManage';
-import RiskManage from './pages/Risk/RiskManage';
-import ConfigReleasePage from './pages/ConfigRelease/ConfigRelease';
 import EntitlementManage from './pages/Entitlement/EntitlementManage';
 import UserManage from './pages/User/UserManage';
 import AppVersionManage from './pages/AppVersion/AppVersionManage';
@@ -25,8 +23,6 @@ export default function App() {
         <Route index element={<Dashboard />} />
         <Route path="admin/users" element={<AdminUsers />} />
         <Route path="platform" element={<PlatformManage />} />
-        <Route path="risk" element={<RiskManage />} />
-        <Route path="config" element={<ConfigReleasePage />} />
         <Route path="entitlement" element={<EntitlementManage />} />
         <Route path="app-versions" element={<AppVersionManage />} />
         <Route path="users" element={<UserManage />} />

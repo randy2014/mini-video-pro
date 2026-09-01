@@ -47,8 +47,6 @@ src/main/java/com/video/entitlement/
 │   ├── device/               # 设备 (设备绑定/状态)
 │   ├── entitlement/          # 权益 (权益码/兑换)
 │   ├── platform/             # 平台 (域名/URL规则/标准化/APP版本)
-│   ├── configrelease/        # 配置发布 (版本/发布)
-│   ├── risk/                 # 风控 (限流/黑名单/风险事件)
 │   └── stats/                # 统计
 └── VideoEntitlementApplication.java
 ```
@@ -81,10 +79,6 @@ src/main/java/com/video/entitlement/
 | GET | /admin/api/v1/platform | 平台列表 |
 | POST | /admin/api/v1/platform/{id}/domains | 添加域名 |
 | POST | /admin/api/v1/platform/{id}/rules | 添加URL规则 |
-| GET/POST | /admin/api/v1/risk/blacklist | 黑名单管理 |
-| GET | /admin/api/v1/risk/events | 风险事件 |
-| GET | /admin/api/v1/risk/rules | 风控规则 |
-| GET/POST | /admin/api/v1/config/releases | 配置发布 |
 | GET | /admin/api/v1/stats/summary | 核心统计 |
 
 ## 错误码体系

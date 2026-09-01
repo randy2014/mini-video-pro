@@ -68,10 +68,6 @@ app:
   admin:
     default-username: ${ADMIN_DEFAULT_USERNAME:admin}
     default-password: ${ADMIN_DEFAULT_PASSWORD:Admin@123}
-  risk:
-    rate-limit:
-      default-replenish-rate: 10
-      default-burst-capacity: 20
   playback:
     default-max-attempts: 3
     attempt-timeout-seconds: 30

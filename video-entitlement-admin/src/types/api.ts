@@ -59,51 +59,6 @@ export interface PlatformConfigRequest {
   domains?: string[];
 }
 
-// Risk
-export interface RiskBlacklist {
-  id: number;
-  blacklistType: string;
-  targetValue: string;
-  status: string;
-  reason: string;
-  startTime: string;
-}
-export interface RiskEvent {
-  id: number;
-  riskEventType: string;
-  userId: number;
-  riskLevel: string;
-  action: string;
-  createdAt: string;
-}
-export interface RiskRule {
-  id: number;
-  ruleCode: string;
-  eventType: string;
-  threshold: number;
-  windowSeconds: number;
-  action: string;
-  enabled: boolean;
-}
-
-// ConfigRelease
-export interface ConfigRelease {
-  id: number;
-  releaseNo: string;
-  releaseType: string;
-  configVersion: string;
-  status: string;
-  grayPercentage: number;
-  description: string;
-  publishedAt: string;
-  createdAt: string;
-}
-export interface ConfigPublishRequest {
-  releaseType: string;
-  description?: string;
-  grayPercentage?: number;
-}
-
 // Stats
 export interface StatsSummary {
   totalUsers: number;

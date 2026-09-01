@@ -11,7 +11,6 @@ import com.video.entitlement.module.entitlement.repository.UserEntitlementReposi
 import com.video.entitlement.module.device.repository.UserDeviceRepository;
 import com.video.entitlement.module.user.repository.UserLoginLogRepository;
 import com.video.entitlement.module.user.repository.InviteCodeRepository;
-import com.video.entitlement.module.risk.repository.RiskEventRepository;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -35,7 +34,6 @@ public class UserManageController {
     private final UserDeviceRepository userDeviceRepository;
     private final UserLoginLogRepository userLoginLogRepository;
     private final InviteCodeRepository inviteCodeRepository;
-    private final RiskEventRepository riskEventRepository;
     private final PasswordEncoder passwordEncoder;
 
     @Operation(summary = "用户列表")
@@ -115,7 +113,6 @@ public class UserManageController {
         userDeviceRepository.deleteByUserId(id);
         userLoginLogRepository.deleteByUserId(id);
         inviteCodeRepository.deleteByUserId(id);
-        riskEventRepository.deleteByUserId(id);
         userAccountRepository.delete(user);
         return ApiResponse.success(null);
     }
