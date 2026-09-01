@@ -516,19 +516,19 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun doLogout() {
-        AlertDialog.Builder(this)
-            .setTitle("退出登录")
-            .setMessage("确定要退出登录吗？")
-            .setPositiveButton("确定") { _, _ ->
-                getSharedPreferences("auth", MODE_PRIVATE).edit()
-                    .remove("access_token")
-                    .remove("refresh_token")
-                    .apply()
-                startActivity(Intent(this, LoginActivity::class.java))
-                finish()
-            }
-            .setNegativeButton("取消", null)
-            .show()
+        val view = layoutInflater.inflate(R.layout.dialog_logout, null)
+        val dialog = AlertDialog.Builder(this).setView(view).create()
+        view.findViewById<TextView>(R.id.dlg_cancel).setOnClickListener { dialog.dismiss() }
+        view.findViewById<TextView>(R.id.dlg_confirm).setOnClickListener {
+            dialog.dismiss()
+            getSharedPreferences("auth", MODE_PRIVATE).edit()
+                .remove("access_token")
+                .remove("refresh_token")
+                .apply()
+            startActivity(Intent(this, LoginActivity::class.java))
+            finish()
+        }
+        dialog.show()
     }
 
     private fun showError(msg: String) {
@@ -635,14 +635,18 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun showUpdateDialog(vName: String, notes: String, url: String, force: Boolean) {
-        val msg = "发现新版本 $vName\n\n$notes"
-        AlertDialog.Builder(this)
-            .setTitle("版本更新")
-            .setMessage(msg)
-            .setCancelable(!force)
-            .setPositiveButton("立即更新") { _, _ -> downloadAndInstall(url, vName) }
-            .apply { if (!force) setNegativeButton("稍后", null) }
-            .show()
+        val view = layoutInflater.inflate(R.layout.dialog_update, null)
+        view.findViewById<TextView>(R.id.dlg_version).text = "v$vName"
+        view.findViewById<TextView>(R.id.dlg_notes).text = notes
+        val laterBtn = view.findViewById<TextView>(R.id.dlg_later)
+        if (force) laterBtn.visibility = View.GONE
+        val dialog = AlertDialog.Builder(this).setView(view).setCancelable(!force).create()
+        laterBtn.setOnClickListener { dialog.dismiss() }
+        view.findViewById<TextView>(R.id.dlg_update).setOnClickListener {
+            dialog.dismiss()
+            downloadAndInstall(url, vName)
+        }
+        dialog.show()
     }
 
     private fun downloadAndInstall(url: String, vName: String) {

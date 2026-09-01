@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:gravity="center_horizontal"
+    android:paddingStart="24dp"
+    android:paddingEnd="24dp"
+    android:paddingTop="28dp"
+    android:paddingBottom="24dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="退出登录"
+        android:textSize="18sp"
+        android:textColor="#191919"
+        android:textStyle="bold" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="确定要退出登录吗？"
+        android:textSize="15sp"
+        android:textColor="#888888"
+        android:layout_marginTop="16dp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="26dp">
+
+        <TextView
+            android:id="@+id/dlg_cancel"
+            android:layout_width="0dp"
+            android:layout_height="46dp"
+            android:layout_weight="1"
+            android:text="取消"
+            android:textSize="16sp"
+            android:textColor="#666666"
+            android:gravity="center"
+            android:background="@drawable/bg_btn_secondary"
+            android:layout_marginEnd="8dp" />
+
+        <TextView
+            android:id="@+id/dlg_confirm"
+            android:layout_width="0dp"
+            android:layout_height="46dp"
+            android:layout_weight="1"
+            android:text="确定"
+            android:textSize="16sp"
+            android:textColor="#FFFFFF"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:background="@drawable/bg_button_gold"
+            android:layout_marginStart="8dp" />
+    </LinearLayout>
+</LinearLayout>
