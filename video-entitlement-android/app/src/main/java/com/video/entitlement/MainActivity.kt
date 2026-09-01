@@ -14,6 +14,8 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.provider.Settings
+import android.text.TextWatcher
+import android.text.Editable
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
@@ -27,7 +29,6 @@ import org.json.JSONObject
 import java.io.File
 import java.net.HttpURLConnection
 import java.net.URL
-import java.util.concurrent.ConcurrentHashMap
 
 data class Platform(val name: String, val url: String, val type: String, val code: String, val logo: String)
 
@@ -38,6 +39,7 @@ class MainActivity : AppCompatActivity() {
     private var progressBar: ProgressBar? = null
     private var backBtn: TextView? = null
     private var homeContainer: View? = null
+    private var profileContainer: View? = null
     private var browserContainer: View? = null
     private var platformContainer: LinearLayout? = null
     private var swipeRefresh: SwipeRefreshLayout? = null
@@ -46,18 +48,33 @@ class MainActivity : AppCompatActivity() {
     private var errorPage: View? = null
     private var errorMsg: TextView? = null
     private var retryBtn: TextView? = null
+    private var greetingText: TextView? = null
+    private var searchInput: EditText? = null
+    private var profilePhone: TextView? = null
+    private var profileExpiry: TextView? = null
     private var inviteCard: View? = null
     private var inviteCodeText: TextView? = null
     private var copyBtn: TextView? = null
+    private var entitlementList: LinearLayout? = null
+    private var logoutBtn: TextView? = null
+    private var bottomNav: View? = null
+    private var navHomeLabel: TextView? = null
+    private var navProfileLabel: TextView? = null
+
+    private val tabs = mutableListOf<Pair<String, TextView>>()
 
     private var currentUrl = ""
     private var currentTitle = ""
     private var downloadId: Long = -1L
 
+    private var allPlatforms: List<Platform> = emptyList()
+    private var currentTab = "all"
+    private var currentSearch = ""
+
     private val dp1 get() = resources.displayMetrics.density
     private val API_BASE = "http://64.90.19.6:8081"
 
-    // 品牌色映射
+    // 品牌色映射（用于圆形 logo 背景）
     private val brandColors = mapOf(
         "iqiyi" to 0xFF1FB47C.toInt(), "tencent" to 0xFFFF7028.toInt(),
         "mgtv" to 0xFFFFB617.toInt(), "bilibili" to 0xFFFB7299.toInt(),
@@ -69,20 +86,17 @@ class MainActivity : AppCompatActivity() {
     )
 
     private val typeLabels = mapOf(
-        "video" to "视频网站", "music" to "音乐平台", "tv" to "电视直播", "drama" to "影视剧"
+        "video" to "视频", "music" to "音乐", "tv" to "直播", "drama" to "影视"
     )
-
-    private val logoCache = ConcurrentHashMap<String, Bitmap>()
 
     @SuppressLint("SetJavaScriptEnabled")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         try {
-            // 登录检查：未登录则跳转 LoginActivity
             val token = getSharedPreferences("auth", MODE_PRIVATE)
                 .getString("access_token", null)
             if (token.isNullOrEmpty()) {
-                startActivity(android.content.Intent(this, LoginActivity::class.java))
+                startActivity(Intent(this, LoginActivity::class.java))
                 finish()
                 return
             }
@@ -92,6 +106,10 @@ class MainActivity : AppCompatActivity() {
             initViews()
             showVersion()
             setupWebView()
+            setupTabs()
+            setupSearch()
+            setupBottomNav()
+            showGreeting()
             checkUpdate()
             registerReceiver(downloadReceiver, IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE),
                 Context.RECEIVER_EXPORTED)
@@ -104,7 +122,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun enableEdgeToEdge() {
-        // 内容延伸到状态栏后面
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             window.setDecorFitsSystemWindows(false)
         } else {
@@ -115,9 +132,8 @@ class MainActivity : AppCompatActivity() {
                 or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
             )
         }
-        // 状态栏和导航栏透明
-        window.statusBarColor = android.graphics.Color.TRANSPARENT
-        window.navigationBarColor = android.graphics.Color.TRANSPARENT
+        window.statusBarColor = Color.TRANSPARENT
+        window.navigationBarColor = Color.TRANSPARENT
         @Suppress("DEPRECATION")
         window.addFlags(android.view.WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
     }
@@ -129,8 +145,17 @@ class MainActivity : AppCompatActivity() {
         } catch (_: Exception) { }
     }
 
+    private fun showGreeting() {
+        val mobile = getSharedPreferences("auth", MODE_PRIVATE).getString("mobile", null)
+        val masked = if (!mobile.isNullOrEmpty() && mobile.length >= 7) {
+            mobile.take(3) + "****" + mobile.takeLast(4)
+        } else mobile ?: "用户"
+        greetingText?.text = "你好，$masked"
+    }
+
     private fun initViews() {
         homeContainer = findViewById(R.id.swipe_refresh)
+        profileContainer = findViewById(R.id.profile_scroll)
         browserContainer = findViewById(R.id.browser_container)
         titleText = findViewById(R.id.title_text)
         progressBar = findViewById(R.id.progress_bar)
@@ -143,14 +168,22 @@ class MainActivity : AppCompatActivity() {
         errorPage = findViewById(R.id.error_page)
         errorMsg = findViewById(R.id.error_msg)
         retryBtn = findViewById(R.id.retry_btn)
+        greetingText = findViewById(R.id.greeting_text)
+        searchInput = findViewById(R.id.search_input)
+        profilePhone = findViewById(R.id.profile_phone)
+        profileExpiry = findViewById(R.id.profile_expiry)
         inviteCard = findViewById(R.id.invite_card)
         inviteCodeText = findViewById(R.id.invite_code_text)
         copyBtn = findViewById(R.id.copy_btn)
+        entitlementList = findViewById(R.id.entitlement_list)
+        logoutBtn = findViewById(R.id.logout_btn)
+        bottomNav = findViewById(R.id.bottom_nav)
+        navHomeLabel = findViewById(R.id.nav_home_label)
+        navProfileLabel = findViewById(R.id.nav_profile_label)
         val refreshBtn = findViewById<TextView>(R.id.refresh_btn)
-        val logoutBtn = findViewById<TextView>(R.id.logout_btn)
 
         swipeRefresh?.setOnRefreshListener { fetchPlatforms() }
-        swipeRefresh?.setColorSchemeColors(0xFF7C5CBF.toInt())
+        swipeRefresh?.setColorSchemeColors(0xFF07C160.toInt())
 
         backBtn?.setOnClickListener {
             if (browserContainer?.visibility == View.VISIBLE) showHome()
@@ -170,6 +203,132 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun setupTabs() {
+        tabs.clear()
+        tabs.add("all" to findViewById(R.id.tab_all))
+        tabs.add("video" to findViewById(R.id.tab_video))
+        tabs.add("music" to findViewById(R.id.tab_music))
+        tabs.add("tv" to findViewById(R.id.tab_tv))
+        tabs.add("drama" to findViewById(R.id.tab_drama))
+        for ((key, tv) in tabs) {
+            tv.setOnClickListener { selectTab(key) }
+        }
+        selectTab("all")
+    }
+
+    private fun selectTab(key: String) {
+        currentTab = key
+        for ((k, tv) in tabs) {
+            val selected = k == key
+            tv.background = GradientDrawable().apply {
+                setColor(if (selected) 0xFF07C160.toInt() else 0xFFFFFFFF.toInt())
+                cornerRadius = dp(15).toFloat()
+            }
+            tv.setTextColor(if (selected) 0xFFFFFFFF.toInt() else 0xFF888888.toInt())
+        }
+        renderPlatforms()
+    }
+
+    private fun setupSearch() {
+        searchInput?.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) {
+                currentSearch = s?.toString() ?: ""
+                renderPlatforms()
+            }
+            override fun beforeTextChanged(s: CharSequence?, a: Int, b: Int, c: Int) {}
+            override fun onTextChanged(s: CharSequence?, a: Int, b: Int, c: Int) {}
+        })
+    }
+
+    private fun setupBottomNav() {
+        findViewById<View>(R.id.nav_home).setOnClickListener { showHomeTab() }
+        findViewById<View>(R.id.nav_profile).setOnClickListener { showProfileTab() }
+    }
+
+    private fun showHomeTab() {
+        homeContainer?.visibility = View.VISIBLE
+        profileContainer?.visibility = View.GONE
+        browserContainer?.visibility = View.GONE
+        bottomNav?.visibility = View.VISIBLE
+        navHomeLabel?.setTextColor(0xFF07C160.toInt())
+        navProfileLabel?.setTextColor(0xFF888888.toInt())
+    }
+
+    private fun showProfileTab() {
+        homeContainer?.visibility = View.GONE
+        profileContainer?.visibility = View.VISIBLE
+        browserContainer?.visibility = View.GONE
+        bottomNav?.visibility = View.VISIBLE
+        navHomeLabel?.setTextColor(0xFF888888.toInt())
+        navProfileLabel?.setTextColor(0xFF07C160.toInt())
+        populateProfile()
+    }
+
+    private fun populateProfile() {
+        val prefs = getSharedPreferences("auth", MODE_PRIVATE)
+        val mobile = prefs.getString("mobile", null)
+        profilePhone?.text = mobile ?: "--"
+        val jsonStr = prefs.getString("entitlements", null)
+        var expiry = "永久"
+        if (jsonStr != null) {
+            try {
+                val arr = org.json.JSONArray(jsonStr)
+                var latest = ""
+                for (i in 0 until arr.length()) {
+                    val e = arr.getJSONObject(i)
+                    val exp = e.optString("expireTime", "")
+                    if (exp.isEmpty()) { expiry = "永久"; break }
+                    if (exp > latest) latest = exp
+                }
+                if (latest.isNotEmpty() && expiry != "永久") expiry = latest.substring(0, 10)
+            } catch (_: Exception) { }
+        }
+        profileExpiry?.text = "权益有效期至 $expiry"
+        renderEntitlements(jsonStr)
+    }
+
+    private fun renderEntitlements(jsonStr: String?) {
+        entitlementList?.removeAllViews()
+        if (jsonStr.isNullOrEmpty()) {
+            addEntitlementRow("暂无权益", "-")
+            return
+        }
+        try {
+            val arr = org.json.JSONArray(jsonStr)
+            if (arr.length() == 0) { addEntitlementRow("暂无权益", "-"); return }
+            for (i in 0 until arr.length()) {
+                val e = arr.getJSONObject(i)
+                val code = e.optString("entitlementCode", "--")
+                val exp = e.optString("expireTime", "")
+                addEntitlementRow(code, if (exp.isEmpty()) "永久" else exp.substring(0, 10))
+            }
+        } catch (_: Exception) {
+            addEntitlementRow("暂无权益", "-")
+        }
+    }
+
+    private fun addEntitlementRow(code: String, exp: String) {
+        val row = LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.CENTER_VERTICAL
+            setPadding(dp(16), dp(15), dp(16), dp(15))
+        }
+        val codeTv = TextView(this).apply {
+            text = code; textSize = 13f; setTextColor(0xFF191919.toInt())
+            layoutParams = LinearLayout.LayoutParams(0, WRAP, 1f)
+        }
+        val expTv = TextView(this).apply {
+            text = exp; textSize = 13f; setTextColor(0xFF888888.toInt())
+        }
+        row.addView(codeTv); row.addView(expTv)
+        entitlementList?.addView(row)
+        val divider = View(this).apply {
+            layoutParams = LinearLayout.LayoutParams(MATCH, 1)
+            setBackgroundColor(0xFFF0F0F0.toInt())
+        }
+        entitlementList?.addView(divider)
+    }
+
     @SuppressLint("SetJavaScriptEnabled")
     private fun setupWebView() {
         val wv = webView ?: return
@@ -186,7 +345,6 @@ class MainActivity : AppCompatActivity() {
                 userAgentString = "Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.6099.144 Mobile Safari/537.36"
                 setGeolocationEnabled(true); setSupportMultipleWindows(false)
             }
-            // 禁用 WebView 下载能力
             wv.setDownloadListener { _, _, _, _, _ -> }
             wv.webViewClient = object : WebViewClient() {
                 override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
@@ -244,7 +402,6 @@ class MainActivity : AppCompatActivity() {
                 }
                 conn.disconnect()
             } catch (e: Exception) {
-                // 网络/解析错误会被下面 runOnUiThread 的 else 分支处理
                 e.printStackTrace()
             }
 
@@ -252,8 +409,8 @@ class MainActivity : AppCompatActivity() {
                 showLoading(false)
                 swipeRefresh?.isRefreshing = false
                 if (ok && platforms.isNotEmpty()) {
-                    renderPlatforms(platformContainer!!, platforms)
-                    updateStats(platforms)
+                    allPlatforms = platforms
+                    renderPlatforms()
                 } else {
                     loadingText?.text = "加载失败，下拉重试"
                     loadingOverlay?.visibility = View.VISIBLE
@@ -267,12 +424,6 @@ class MainActivity : AppCompatActivity() {
         if (show) loadingText?.text = "加载中..."
     }
 
-    private fun updateStats(platforms: List<Platform>) {
-        findViewById<TextView>(R.id.stat_platforms)?.text = "${platforms.count { it.type == "video" }}"
-        findViewById<TextView>(R.id.stat_music)?.text = "${platforms.count { it.type == "music" }}"
-        findViewById<TextView>(R.id.stat_tv)?.text = "${platforms.count { it.type == "tv" }}"
-    }
-
     private fun guessType(code: String): String = when {
         code in listOf("wangyiyun", "qqmusic", "kugou") -> "music"
         code == "cctv" -> "tv"
@@ -280,51 +431,29 @@ class MainActivity : AppCompatActivity() {
         else -> "video"
     }
 
-    // ====== UI 构建 ======
-    private fun renderPlatforms(container: LinearLayout, platforms: List<Platform>) {
-        try {
-            container.removeAllViews()
-            for ((type, label) in typeLabels) {
-                val group = platforms.filter { it.type == type }
-                if (group.isEmpty()) continue
-                container.addView(buildSectionHeader(label))
-                container.addView(buildCardGrid(group))
-            }
-        } catch (_: Exception) { }
-    }
-
-    private fun buildSectionHeader(label: String): View {
-        val row = LinearLayout(this).apply {
-            orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL
-            setPadding(0, dp(26), 0, dp(12))
+    // ====== UI 构建（白卡 + 品牌色圆形 logo + 分类/搜索过滤） ======
+    private fun renderPlatforms() {
+        val filtered = allPlatforms.filter { p ->
+            val matchTab = currentTab == "all" || p.type == currentTab
+            val matchSearch = currentSearch.isBlank() || p.name.contains(currentSearch, true)
+            matchTab && matchSearch
         }
-        val dot = View(this).apply {
-            layoutParams = LinearLayout.LayoutParams(dp(6), dp(6)).apply { marginEnd = dp(8) }
-            background = GradientDrawable().apply {
-                setColor(0xFFD4AF37.toInt()); shape = GradientDrawable.OVAL
-            }
-        }
-        val tv = TextView(this).apply {
-            text = label; textSize = 16f; setTypeface(null, Typeface.BOLD)
-            setTextColor(0xFFF1D77A.toInt())
-        }
-        row.addView(dot); row.addView(tv)
-        return row
-    }
-
-    private fun buildCardGrid(platforms: List<Platform>): LinearLayout {
-        val grid = LinearLayout(this).apply {
-            orientation = LinearLayout.VERTICAL
-            layoutParams = LinearLayout.LayoutParams(MATCH, WRAP)
+        platformContainer?.removeAllViews()
+        if (filtered.isEmpty()) {
+            platformContainer?.addView(TextView(this).apply {
+                text = "暂无匹配平台"; textSize = 13f; setTextColor(0xFF888888.toInt())
+                gravity = Gravity.CENTER; setPadding(0, dp(40), 0, dp(40))
+            })
+            return
         }
         var row: LinearLayout? = null
-        platforms.forEachIndexed { i, p ->
+        filtered.forEachIndexed { i, p ->
             if (i % 2 == 0) {
                 row = LinearLayout(this).apply {
                     orientation = LinearLayout.HORIZONTAL
                     layoutParams = LinearLayout.LayoutParams(MATCH, WRAP)
                 }
-                grid.addView(row)
+                platformContainer?.addView(row)
             }
             val card = buildPlatformCard(p)
             val lp = LinearLayout.LayoutParams(0, WRAP, 1f)
@@ -332,113 +461,61 @@ class MainActivity : AppCompatActivity() {
             lp.setMargins(if (isLeft) 0 else dp(5), 0, if (isLeft) dp(5) else 0, dp(10))
             row?.addView(card, lp)
         }
-        return grid
     }
 
     private fun buildPlatformCard(p: Platform): LinearLayout {
-        val brand = brandColors[p.code] ?: 0xFF7C5CBF.toInt()
+        val brand = brandColors[p.code] ?: 0xFF07C160.toInt()
         val card = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL; gravity = Gravity.CENTER
-            minimumHeight = dp(136)
+            minimumHeight = dp(120)
             setPadding(dp(14), dp(18), dp(14), dp(18))
-            contentDescription = "${p.name}，${typeLabels[p.type] ?: "平台"}"
             isFocusable = true
-            elevation = dp(2).toFloat()
+            elevation = dp(1).toFloat()
             background = GradientDrawable().apply {
-                setColor(0xF21E1035.toInt()); cornerRadius = dp(16).toFloat()
-                setStroke(dp(1), 0x3DD4AF37)
+                setColor(0xFFFFFFFF.toInt()); cornerRadius = dp(14).toFloat()
+                setStroke(dp(1), 0xFFF0F0F0.toInt())
             }
             setOnClickListener { openPlatform(p) }
         }
 
-        // 顶部三点装饰
-        val dots = LinearLayout(this).apply {
-            orientation = LinearLayout.HORIZONTAL
+        // 品牌色圆形 logo（首字）
+        val circle = TextView(this).apply {
+            text = p.name.take(1)
+            textSize = 18f
+            setTextColor(0xFFFFFFFF.toInt())
+            setTypeface(null, Typeface.BOLD)
             gravity = Gravity.CENTER
-            layoutParams = LinearLayout.LayoutParams(WRAP, WRAP).apply { bottomMargin = dp(10) }
-        }
-        for (j in 0..2) {
-            dots.addView(View(this).apply {
-                val s = if (j == 0) dp(4) else dp(3)
-                layoutParams = LinearLayout.LayoutParams(s, s).apply {
-                    marginEnd = if (j < 2) dp(3) else 0
-                }
-                background = GradientDrawable().apply {
-                    setColor(if (j == 0) brand else 0x66D4AF37); shape = GradientDrawable.OVAL
-                }
-            })
-        }
-
-        // Logo 按接口 URL 异步加载；空值或失败时保留品牌色圆点
-        val circle = ImageView(this).apply {
-            layoutParams = LinearLayout.LayoutParams(dp(32), dp(32)).apply { bottomMargin = dp(10) }
-            scaleType = ImageView.ScaleType.CENTER_CROP
-            contentDescription = "${p.name} Logo"
+            layoutParams = LinearLayout.LayoutParams(dp(48), dp(48)).apply { bottomMargin = dp(10) }
             background = GradientDrawable().apply { setColor(brand); shape = GradientDrawable.OVAL }
-            outlineProvider = object : android.view.ViewOutlineProvider() {
-                override fun getOutline(view: View, outline: Outline) {
-                    outline.setOval(0, 0, view.width, view.height)
-                }
-            }
-            clipToOutline = true
         }
-        loadPlatformLogo(p.logo, circle)
 
         // 名称
         val name = TextView(this).apply {
-            text = p.name; textSize = 15f; setTextColor(0xFFF7F2FF.toInt())
+            text = p.name; textSize = 14f; setTextColor(0xFF191919.toInt())
             setTypeface(null, Typeface.BOLD); gravity = Gravity.CENTER; maxLines = 1
             ellipsize = android.text.TextUtils.TruncateAt.END
-            setPadding(dp(4), 0, dp(4), 0)
         }
 
-        // 标签
+        // 类型标签
         val tag = TextView(this).apply {
-            text = typeLabels[p.type] ?: ""; textSize = 11f; setTextColor(0xFFF1D77A.toInt())
+            text = typeLabels[p.type] ?: ""; textSize = 11f; setTextColor(0xFF07C160.toInt())
             setPadding(dp(10), dp(4), dp(10), dp(4))
             layoutParams = LinearLayout.LayoutParams(WRAP, WRAP).apply { topMargin = dp(8) }
             background = GradientDrawable().apply {
-                setColor(0x18D4AF37); cornerRadius = dp(8).toFloat()
+                setColor(0xFFE8F8EE.toInt()); cornerRadius = dp(8).toFloat()
             }
         }
 
-        card.addView(dots); card.addView(circle); card.addView(name); card.addView(tag)
+        card.addView(circle); card.addView(name); card.addView(tag)
         return card
-    }
-
-    private fun loadPlatformLogo(logoUrl: String, target: ImageView) {
-        if (logoUrl.isBlank()) return
-        target.tag = logoUrl
-
-        logoCache[logoUrl]?.let {
-            target.setImageBitmap(it)
-            return
-        }
-
-        Thread {
-            var conn: HttpURLConnection? = null
-            try {
-                conn = URL(logoUrl).openConnection() as HttpURLConnection
-                conn.connectTimeout = 5000
-                conn.readTimeout = 5000
-                conn.instanceFollowRedirects = true
-                val bitmap = conn.inputStream.use { BitmapFactory.decodeStream(it) } ?: return@Thread
-                logoCache[logoUrl] = bitmap
-                runOnUiThread {
-                    if (target.tag == logoUrl) target.setImageBitmap(bitmap)
-                }
-            } catch (_: Exception) {
-                // 保留品牌色圆点作为图片加载失败的视觉回退
-            } finally {
-                conn?.disconnect()
-            }
-        }.start()
     }
 
     private fun openPlatform(p: Platform) {
         try {
             homeContainer?.visibility = View.GONE
+            profileContainer?.visibility = View.GONE
             browserContainer?.visibility = View.VISIBLE
+            bottomNav?.visibility = View.GONE
             backBtn?.visibility = View.VISIBLE
             currentTitle = p.name; titleText?.text = p.name
             webView?.loadUrl(p.url)
@@ -449,6 +526,9 @@ class MainActivity : AppCompatActivity() {
         try {
             browserContainer?.visibility = View.GONE
             homeContainer?.visibility = View.VISIBLE
+            bottomNav?.visibility = View.VISIBLE
+            navHomeLabel?.setTextColor(0xFF07C160.toInt())
+            navProfileLabel?.setTextColor(0xFF888888.toInt())
             webView?.stopLoading(); webView?.loadUrl("about:blank")
         } catch (_: Exception) { }
     }
@@ -458,12 +538,10 @@ class MainActivity : AppCompatActivity() {
             .setTitle("退出登录")
             .setMessage("确定要退出登录吗？")
             .setPositiveButton("确定") { _, _ ->
-                // 只清除 token，保留手机号/密码/权益码供下次自动填充
                 getSharedPreferences("auth", MODE_PRIVATE).edit()
                     .remove("access_token")
                     .remove("refresh_token")
                     .apply()
-                logoCache.clear()
                 startActivity(Intent(this, LoginActivity::class.java))
                 finish()
             }
@@ -474,8 +552,8 @@ class MainActivity : AppCompatActivity() {
     private fun showError(msg: String) {
         setContentView(TextView(this).apply {
             text = msg; setPadding(32, 32, 32, 32)
-            textSize = 16f; setTextColor(0xFFE94560.toInt())
-            setBackgroundColor(0xFF1A0A2E.toInt())
+            textSize = 16f; setTextColor(0xFFFA5151.toInt())
+            setBackgroundColor(0xFFFFFFFF.toInt())
         })
     }
 
@@ -489,7 +567,7 @@ class MainActivity : AppCompatActivity() {
             for (i in 0 until arr.length()) {
                 val e = arr.getJSONObject(i)
                 val expTime = e.optString("expireTime", "")
-                if (expTime.isEmpty()) continue // 永久
+                if (expTime.isEmpty()) continue
                 val expMs = try { java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", java.util.Locale.US).parse(expTime)?.time ?: 0 } catch (_: Exception) { 0L }
                 if (expMs > 0 && expMs - now < threeDays && expMs > now) {
                     soon.add(e.getString("entitlementCode"))
@@ -520,7 +598,7 @@ class MainActivity : AppCompatActivity() {
                 conn.connectTimeout = 8000; conn.readTimeout = 8000
                 val body = conn.inputStream.reader().readText()
                 conn.disconnect()
-                val json = org.json.JSONObject(body)
+                val json = JSONObject(body)
                 val data = json.optJSONObject("data") ?: return@Thread
                 val code = data.optString("code", "")
                 if (code.isNotEmpty()) {
@@ -540,6 +618,8 @@ class MainActivity : AppCompatActivity() {
             try {
                 if (webView?.canGoBack() == true) webView?.goBack() else showHome()
             } catch (_: Exception) { showHome() }
+        } else if (profileContainer?.visibility == View.VISIBLE) {
+            showHomeTab()
         } else super.onBackPressed()
     }
 
@@ -629,7 +709,6 @@ class MainActivity : AppCompatActivity() {
 
     private fun installApk(uri: Uri) {
         try {
-            // Android 8+ 需要检查安装未知来源权限
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O &&
                 !packageManager.canRequestPackageInstalls()) {
                 toast("请允许安装未知应用后重试")

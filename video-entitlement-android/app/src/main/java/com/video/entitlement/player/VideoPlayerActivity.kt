@@ -31,6 +31,12 @@ class VideoPlayerActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_video_player)
 
+        // 播放页黑底：状态栏黑色 + 浅色图标（覆盖浅色主题的深色图标）
+        window.statusBarColor = android.graphics.Color.BLACK
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            window.decorView.systemUiVisibility = android.view.View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+        }
+
         playerView = findViewById(R.id.player_view)
         titleText = findViewById(R.id.video_title)
         val backBtn = findViewById<ImageView>(R.id.player_back)

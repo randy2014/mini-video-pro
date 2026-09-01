@@ -5,6 +5,7 @@ import android.graphics.BitmapFactory
 import android.os.Build
 import android.os.Bundle
 import android.text.Editable
+import android.text.InputType
 import android.text.TextWatcher
 import android.view.View
 import android.widget.*
@@ -25,6 +26,7 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var progress: ProgressBar
 
     private var captchaKey: String = ""
+    private var pwdVisible: Boolean = false
 
     companion object {
         const val PREFS_NAME = "auth"
@@ -58,6 +60,16 @@ class LoginActivity : AppCompatActivity() {
         ivCaptcha = findViewById(R.id.iv_captcha)
         btnLogin = findViewById(R.id.btn_login)
         progress = ProgressBar(this).also { it.visibility = View.GONE }
+
+        // 密码可见/隐藏切换
+        findViewById<TextView>(R.id.toggle_pwd).setOnClickListener {
+            pwdVisible = !pwdVisible
+            etPassword.inputType = if (pwdVisible)
+                InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
+            else
+                InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
+            etPassword.setSelection(etPassword.text.length)
+        }
 
         // 权益码必填：输入验证 + 红色提示
         etEntitlementCode.addTextChangedListener(object : TextWatcher {

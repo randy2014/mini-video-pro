@@ -2,7 +2,7 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/bg_home_gradient"
+    android:background="#FFFFFF"
     android:fillViewport="true"
     android:fitsSystemWindows="true">
 
@@ -17,8 +17,8 @@
 
         <!-- 品牌头部 -->
         <ImageView
-            android:layout_width="88dp"
-            android:layout_height="88dp"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
             android:layout_marginTop="48dp"
             android:contentDescription="迷你视频应用图标"
             android:scaleType="fitCenter"
@@ -30,7 +30,7 @@
             android:layout_marginTop="12dp"
             android:text="迷你视频"
             android:textSize="30sp"
-            android:textColor="#D4AF37"
+            android:textColor="#191919"
             android:textStyle="bold"
             android:letterSpacing="0.04" />
 
@@ -39,7 +39,7 @@
             android:layout_height="wrap_content"
             android:text="VIP 视频权益"
             android:textSize="14sp"
-            android:textColor="#CFC3E6"
+            android:textColor="#888888"
             android:layout_marginTop="4dp"
             android:layout_marginBottom="32dp" />
 
@@ -49,8 +49,8 @@
             android:layout_width="match_parent"
             android:layout_height="56dp"
             android:hint="输入账号 (手机号)"
-            android:textColor="#F0E8FF"
-            android:textColorHint="#A99BBD"
+            android:textColor="#191919"
+            android:textColorHint="#B2B2B2"
             android:background="@drawable/bg_input"
             android:paddingStart="16dp"
             android:paddingEnd="16dp"
@@ -59,21 +59,41 @@
             android:textSize="16sp"
             android:layout_marginBottom="14dp" />
 
-        <!-- 密码 -->
-        <EditText
-            android:id="@+id/et_password"
+        <!-- 密码（带可见切换） -->
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="56dp"
-            android:hint="输入密码"
-            android:textColor="#F0E8FF"
-            android:textColorHint="#A99BBD"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
             android:background="@drawable/bg_input"
-            android:paddingStart="16dp"
-            android:paddingEnd="16dp"
-            android:inputType="textPassword"
-            android:singleLine="true"
-            android:textSize="16sp"
-            android:layout_marginBottom="14dp" />
+            android:layout_marginBottom="14dp">
+
+            <EditText
+                android:id="@+id/et_password"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:hint="输入密码"
+                android:textColor="#191919"
+                android:textColorHint="#B2B2B2"
+                android:background="@null"
+                android:paddingStart="16dp"
+                android:paddingEnd="8dp"
+                android:inputType="textPassword"
+                android:singleLine="true"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/toggle_pwd"
+                android:layout_width="48dp"
+                android:layout_height="match_parent"
+                android:text="👁"
+                android:textSize="18sp"
+                android:gravity="center"
+                android:clickable="true"
+                android:focusable="true"
+                android:background="?attr/selectableItemBackgroundBorderless" />
+        </LinearLayout>
 
         <!-- 权益码（必填） -->
         <EditText
@@ -81,8 +101,8 @@
             android:layout_width="match_parent"
             android:layout_height="56dp"
             android:hint="输入权益码 (8位数字，必填)"
-            android:textColor="#F0E8FF"
-            android:textColorHint="#A99BBD"
+            android:textColor="#191919"
+            android:textColorHint="#B2B2B2"
             android:background="@drawable/bg_input"
             android:paddingStart="16dp"
             android:paddingEnd="16dp"
@@ -105,8 +125,8 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:hint="图形验证码"
-                android:textColor="#F0E8FF"
-                android:textColorHint="#A99BBD"
+                android:textColor="#191919"
+                android:textColorHint="#B2B2B2"
                 android:background="@drawable/bg_input"
                 android:paddingStart="16dp"
                 android:paddingEnd="16dp"
@@ -133,7 +153,7 @@
             android:layout_width="match_parent"
             android:layout_height="56dp"
             android:text="登录 / 注册"
-            android:textColor="#1A0A2E"
+            android:textColor="#FFFFFF"
             android:textStyle="bold"
             android:textSize="16sp"
             android:background="@drawable/bg_button_gold"
@@ -147,7 +167,7 @@
             android:layout_height="wrap_content"
             android:text="账号不存在时将自动注册"
             android:textSize="12sp"
-            android:textColor="#A99BBD" />
+            android:textColor="#B2B2B2" />
 
         <!-- 版本号 -->
         <TextView
@@ -155,7 +175,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="11sp"
-            android:textColor="#817392"
+            android:textColor="#B2B2B2"
             android:layout_marginTop="24dp"
             android:text="v1.0" />
 

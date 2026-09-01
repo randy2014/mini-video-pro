@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <style name="Theme.VideoEntitlement" parent="Theme.AppCompat.NoActionBar">
-        <item name="colorPrimary">#7C5CBF</item>
-        <item name="colorPrimaryDark">#1A0A2E</item>
-        <item name="colorAccent">#D4AF37</item>
+        <item name="colorPrimary">#07C160</item>
+        <item name="colorPrimaryDark">#06AD56</item>
+        <item name="colorAccent">#07C160</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:navigationBarColor">@android:color/transparent</item>
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>
-        <item name="android:windowLightStatusBar">false</item>
-        <item name="android:windowLightNavigationBar">false</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowLightNavigationBar">true</item>
         <item name="android:navigationBarDividerColor">@android:color/transparent</item>
         <item name="android:fontFamily">sans</item>
-        <item name="android:colorControlHighlight">#26FFFFFF</item>
+        <item name="android:colorControlHighlight">#1407C160</item>
         <item name="android:windowActionModeOverlay">true</item>
     </style>
 </resources>
