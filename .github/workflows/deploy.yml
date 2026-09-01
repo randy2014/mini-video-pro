@@ -151,3 +151,8 @@ jobs:
             fi
             # 如果 docker 中有 nginx 容器也重载
             docker exec video-nginx nginx -s reload 2>/dev/null || true
+
+            # 清理 Docker 缓存（悬空/未用镜像、停止容器、构建缓存；不动 volumes 即 MySQL/Redis 数据）
+            echo "=== 清理 Docker 缓存 ==="
+            docker system prune -a -f || true
+            echo "=== 缓存清理完成 ==="
