@@ -220,7 +220,7 @@ export default function AppVersionManage() {
                 : <span style={{ color: '#999' }}>未选择文件（可改为下方填写下载地址）</span>}
             </Space>
           </Form.Item>
-          <Form.Item name="downloadUrl" label="下载地址（不传文件时必填）" extra="例如 http://43.161.222.78:8082/downloads/xxx.apk">
+          <Form.Item name="downloadUrl" label="下载地址（不传文件时必填）" extra="例如 http://64.90.19.6:8082/downloads/xxx.apk">
             <Input placeholder="手动填写外部下载地址" />
           </Form.Item>
         </Form>

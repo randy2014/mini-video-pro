@@ -78,7 +78,7 @@ app:
   entitlement-code:
     hmac-key: ${ENTITLEMENT_HMAC_KEY:change-me-hmac-key-for-code-hashing}
   apk-dir: ${APP_APK_DIR:/data/video-apk}
-  download-base: ${APP_DOWNLOAD_BASE:http://43.161.222.78:8082/downloads}
+  download-base: ${APP_DOWNLOAD_BASE:http://64.90.19.6:8082/downloads}
 logging:
   level:
     root: INFO

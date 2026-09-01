@@ -33,7 +33,7 @@ class LoginActivity : AppCompatActivity() {
         const val KEY_MOBILE = "mobile"
         const val KEY_PASSWORD = "saved_password"
         const val KEY_ENTITLEMENT_CODE = "saved_entitlement_code"
-        val API_BASE = "http://43.161.222.78:8081"
+        val API_BASE = "http://64.90.19.6:8081"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

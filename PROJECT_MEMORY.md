@@ -8,7 +8,7 @@
 - **禁止变更服务器上除本项目以外的任何内容**：只操作 `video-*` 容器与 `/data/video-apk` 等本项目路径；不碰其他项目的 Nginx、配置、容器（含系统级 Nginx 只可 reload，不可改其他 server 块）
 
 ## 服务器信息
-- IP: 43.161.222.78
+- IP: 64.90.19.6（SSH 端口 52527，用户 root；已于 2026-08-04 从旧服务器 43.161.222.78 迁移）
 - SSH Key: ~/.ssh/video-pro-key
 - MySQL root: VideoPro@2024!
 - Admin: admin / Admin@123
@@ -26,23 +26,23 @@
 - video-entitlement-admin: React + TypeScript + Ant Design + Vite
 - video-entitlement-android: Kotlin + XML + ExoPlayer + WebView
 
-## 已删除模块
-- 播放路由 (playback)
-- 权益管理 (entitlement)
-- 健康监控 (health)
-
-## 保留模块
-- 平台管理 (platform): 支持 video/music/tv/drama 类型, 编辑/删除
-- 管理员管理 (admin)
-- 风控管理 (risk)
-- 配置发布 (config)
+## 业务模块（以当前代码为准，共 8 个）
+- 平台管理 (platform): 支持 video/music/tv/drama 类型, 编辑/删除 + APP 版本发布
+- 管理员管理 (admin): 认证/角色/权限/操作日志 + 用户管理
+- 用户管理 (user): 登录/注册/邀请码/验证码
+- 权益管理 (entitlement): 权益码生成/兑换
+- 设备管理 (device): 设备绑定/状态
+- 风控管理 (risk): 限流/黑名单/风险事件
+- 配置发布 (configrelease): 配置版本/发布
 - 统计 (stats)
+
+> 已删除模块: 播放路由 (playback)、健康监控 (health)。注意 `application.yml` 仍残留 `app.playback.*` 配置段，属历史遗留，可清理。
 
 ## Android APK
 - 版本: v1.2 (versionCode 3)
 - 构建脚本: build_and_deploy.sh (构建→时间戳命名→二维码→上传)
 - 命名: video-entitlement-v{version}-{YYYYMMDD}-{HHmmss}.apk
-- 下载页: http://43.161.222.78:8082/downloads/
+- 下载页: http://64.90.19.6:8082/downloads/
 - 特性: 高贵紫主题, 全屏沉浸, API驱动, SwipeRefreshLayout, 版本号显示
 
 ## 数据库

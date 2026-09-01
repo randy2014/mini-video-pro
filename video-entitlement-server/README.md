@@ -42,14 +42,12 @@ src/main/java/com/video/entitlement/
 │   ├── security/             # JWT, SecurityConfig
 │   └── util/                 # 工具类
 ├── module/
-│   ├── admin/                # 管理员 (认证/角色/权限/操作日志)
-│   ├── user/                 # 用户 (登录/Refresh Token/登录日志)
+│   ├── admin/                # 管理员 (认证/角色/权限/操作日志/用户管理)
+│   ├── user/                 # 用户 (登录/Refresh Token/邀请码/验证码)
 │   ├── device/               # 设备 (设备绑定/状态)
-│   ├── entitlement/          # 权益 (产品/批次/权益码/兑换/次数限制)
-│   ├── platform/             # 平台 (域名/URL规则/标准化)
-│   ├── playback/             # 播放路由 (供应商/线路/规则/resolve/report)
-│   ├── health/               # 健康 (健康指标/熔断/指标统计)
-│   ├── configrelease/        # 配置发布 (版本/灰度/回滚)
+│   ├── entitlement/          # 权益 (权益码/兑换)
+│   ├── platform/             # 平台 (域名/URL规则/标准化/APP版本)
+│   ├── configrelease/        # 配置发布 (版本/发布)
 │   ├── risk/                 # 风控 (限流/黑名单/风险事件)
 │   └── stats/                # 统计
 └── VideoEntitlementApplication.java
@@ -66,8 +64,6 @@ src/main/java/com/video/entitlement/
 | POST | /api/v1/client/url/standardize | URL标准化 |
 | GET | /api/v1/entitlement/my | 我的权益 |
 | POST | /api/v1/entitlement/redeem | 兑换权益码 |
-| POST | /api/v1/playback/resolve | 播放决策 |
-| POST | /api/v1/playback/report | 上报播放结果 |
 
 ### 管理端接口 (前缀 /admin/api/v1)
 | 方法 | 路径 | 说明 |
@@ -85,10 +81,6 @@ src/main/java/com/video/entitlement/
 | GET | /admin/api/v1/platform | 平台列表 |
 | POST | /admin/api/v1/platform/{id}/domains | 添加域名 |
 | POST | /admin/api/v1/platform/{id}/rules | 添加URL规则 |
-| GET/POST | /admin/api/v1/playback/providers | 供应商管理 |
-| GET/POST | /admin/api/v1/playback/routes | 线路管理 |
-| GET/POST | /admin/api/v1/playback/rules | 规则管理 |
-| GET | /admin/api/v1/playback/health | 线路健康状态 |
 | GET/POST | /admin/api/v1/risk/blacklist | 黑名单管理 |
 | GET | /admin/api/v1/risk/events | 风险事件 |
 | GET | /admin/api/v1/risk/rules | 风控规则 |

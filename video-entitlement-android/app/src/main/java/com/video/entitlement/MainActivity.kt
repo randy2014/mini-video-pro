@@ -55,7 +55,7 @@ class MainActivity : AppCompatActivity() {
     private var downloadId: Long = -1L
 
     private val dp1 get() = resources.displayMetrics.density
-    private val API_BASE = "http://43.161.222.78:8081"
+    private val API_BASE = "http://64.90.19.6:8081"
 
     // 品牌色映射
     private val brandColors = mapOf(

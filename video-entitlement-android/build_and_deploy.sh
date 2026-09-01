@@ -11,10 +11,11 @@ VERSION=$(grep versionName app/build.gradle.kts | head -1 | grep -oP '"\K[^"]+')
 APK_NAME="video-entitlement-v${VERSION}-${TIMESTAMP}.apk"
 QR_NAME="qr-${APK_NAME%.apk}.png"
 SRC_APK="app/build/outputs/apk/debug/app-debug.apk"
-SERVER="root@43.161.222.78"
+SERVER="root@64.90.19.6"
 SSH_KEY="$HOME/.ssh/video-pro-key"
+PORT=52527
 DEPLOY_DIR="/data/video-apk"
-DOMAIN="http://43.161.222.78:8082"
+DOMAIN="http://64.90.19.6:8082"
 
 # 本地备份
 cp "$SRC_APK" "/workspace/${APK_NAME}"
@@ -42,10 +43,10 @@ print("   最新版 QR: qr-download-latest.png")
 PYEOF
 
 echo "📤 上传到服务器..."
-scp -i "$SSH_KEY" -o StrictHostKeyChecking=no "$SRC_APK" "${SERVER}:${DEPLOY_DIR}/${APK_NAME}"
-scp -i "$SSH_KEY" -o StrictHostKeyChecking=no "$SRC_APK" "${SERVER}:${DEPLOY_DIR}/video-entitlement-latest.apk"
-scp -i "$SSH_KEY" -o StrictHostKeyChecking=no "/workspace/${QR_NAME}" "${SERVER}:${DEPLOY_DIR}/"
-scp -i "$SSH_KEY" -o StrictHostKeyChecking=no "/workspace/qr-download-latest.png" "${SERVER}:${DEPLOY_DIR}/"
+scp -P "$PORT" -i "$SSH_KEY" -o StrictHostKeyChecking=no "$SRC_APK" "${SERVER}:${DEPLOY_DIR}/${APK_NAME}"
+scp -P "$PORT" -i "$SSH_KEY" -o StrictHostKeyChecking=no "$SRC_APK" "${SERVER}:${DEPLOY_DIR}/video-entitlement-latest.apk"
+scp -P "$PORT" -i "$SSH_KEY" -o StrictHostKeyChecking=no "/workspace/${QR_NAME}" "${SERVER}:${DEPLOY_DIR}/"
+scp -P "$PORT" -i "$SSH_KEY" -o StrictHostKeyChecking=no "/workspace/qr-download-latest.png" "${SERVER}:${DEPLOY_DIR}/"
 
 SIZE=$(ls -lh "$SRC_APK" | awk '{print $5}')
 echo ""
