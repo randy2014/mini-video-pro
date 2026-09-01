@@ -102,7 +102,6 @@ class MainActivity : AppCompatActivity() {
             }
 
             setContentView(R.layout.activity_main)
-            enableEdgeToEdge()
             initViews()
             showVersion()
             setupWebView()
@@ -119,23 +118,6 @@ class MainActivity : AppCompatActivity() {
         } catch (e: Exception) {
             showError("启动失败: ${e.message}")
         }
-    }
-
-    private fun enableEdgeToEdge() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            window.setDecorFitsSystemWindows(false)
-        } else {
-            @Suppress("DEPRECATION")
-            window.decorView.systemUiVisibility = (
-                View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-            )
-        }
-        window.statusBarColor = Color.TRANSPARENT
-        window.navigationBarColor = Color.TRANSPARENT
-        @Suppress("DEPRECATION")
-        window.addFlags(android.view.WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
     }
 
     private fun showVersion() {
@@ -314,11 +296,11 @@ class MainActivity : AppCompatActivity() {
             setPadding(dp(16), dp(15), dp(16), dp(15))
         }
         val codeTv = TextView(this).apply {
-            text = code; textSize = 13f; setTextColor(0xFF191919.toInt())
+            text = code; textSize = 15f; setTextColor(0xFF191919.toInt())
             layoutParams = LinearLayout.LayoutParams(0, WRAP, 1f)
         }
         val expTv = TextView(this).apply {
-            text = exp; textSize = 13f; setTextColor(0xFF888888.toInt())
+            text = exp; textSize = 15f; setTextColor(0xFF888888.toInt())
         }
         row.addView(codeTv); row.addView(expTv)
         entitlementList?.addView(row)
@@ -481,7 +463,7 @@ class MainActivity : AppCompatActivity() {
         // 品牌色圆形 logo（首字）
         val circle = TextView(this).apply {
             text = p.name.take(1)
-            textSize = 18f
+            textSize = 20f
             setTextColor(0xFFFFFFFF.toInt())
             setTypeface(null, Typeface.BOLD)
             gravity = Gravity.CENTER
@@ -491,14 +473,14 @@ class MainActivity : AppCompatActivity() {
 
         // 名称
         val name = TextView(this).apply {
-            text = p.name; textSize = 14f; setTextColor(0xFF191919.toInt())
+            text = p.name; textSize = 17f; setTextColor(0xFF191919.toInt())
             setTypeface(null, Typeface.BOLD); gravity = Gravity.CENTER; maxLines = 1
             ellipsize = android.text.TextUtils.TruncateAt.END
         }
 
         // 类型标签
         val tag = TextView(this).apply {
-            text = typeLabels[p.type] ?: ""; textSize = 11f; setTextColor(0xFF07C160.toInt())
+            text = typeLabels[p.type] ?: ""; textSize = 12f; setTextColor(0xFF07C160.toInt())
             setPadding(dp(10), dp(4), dp(10), dp(4))
             layoutParams = LinearLayout.LayoutParams(WRAP, WRAP).apply { topMargin = dp(8) }
             background = GradientDrawable().apply {
