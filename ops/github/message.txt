@@ -1,0 +1,9 @@
+docs+ops: 域名接入验收记录、APK 打包修复与运维脚本沉淀
+
+- 2026-09-15-域名接入变更.md：补齐验收结果、CI 打包两个坑、最终交付、遗留建议
+- PROJECT_MEMORY.md：更新 APK 当前版本与打包注意事项；补 GitHub 访问方式；
+  🔴 标注仓库仍为 public（含明文密钥）需处理
+- ops/deploy/register-version.sh：打包后登记版本表 + 自动停用旧 ACTIVE 版本
+- ops/deploy/verify-domain.sh：域名入口全量验收（本项目 4 条路由 + mini-novel 回归）
+- ops/deploy/check-apk-domain.sh：解 dex 反查 APK 内真实域名常量
+- ops/github/*：github.com 不可达时经 REST API 推送的脚本与数据文件

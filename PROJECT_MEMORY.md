@@ -7,6 +7,7 @@
 - **APK 每次构建必须给出时间戳下载链接 + 二维码**
 - **禁止变更服务器上除本项目以外的任何内容**：只操作 `video-*` 容器与 `/data/video-apk` 等本项目路径；不碰其他项目的 Nginx、配置、容器（含系统级 Nginx 只可 reload，不可改其他 server 块）
 - **每次构建发布后清理服务器 Docker 缓存**：`deploy.yml` 部署完成自动执行 `docker system prune -a -f`（清理悬空/未用镜像、停止容器、构建缓存）；⚠️ **绝不能加 `--volumes`**，否则会删掉 MySQL/Redis 数据卷
+- **🔴 仓库当前是 public（2026-09-15 实测）**：匿名 `GET api.github.com/repos/randy2014/mini-video-pro` 返回 200、`private: false`。而仓库内有明文 keystore 密码（`README.md`）、DB/Redis/Admin 口令（本文件）、以及签名的 `mini-video-release.jks`。**建议立即转私有并轮换密钥**（与 `问题一览.md` 第 9 条"已转私有"的记载不符）
 
 ## 服务器信息
 - IP: 64.90.19.6（SSH 端口 52527，用户 root；已于 2026-08-04 从旧服务器 43.161.222.78 迁移）
@@ -56,13 +57,24 @@
 > 已删除模块: 播放路由 (playback)、健康监控 (health)、风控管理 (risk)、配置发布 (configrelease)。注意 `application.yml` 仍残留 `app.playback.*` 配置段，属历史遗留，可清理。
 
 ## Android APK
-- 版本: v1.2 (versionCode 3)
+- 当前版本: **0.9.202609151543 (versionCode 9151543)** — 2026-09-15 打包，已登记版本表（id=14, ACTIVE）
 - 构建脚本: build_and_deploy.sh (构建→时间戳命名→二维码→上传) — ⚠️ 已弃用，打包走 CI
 - 打包工作流: `.github/workflows/build-android.yml`（workflow_dispatch 手动触发）
 - API 基址: `https://xs2026.site`（App 调 `/api/v1/...`；原为 `http://64.90.19.6:8081`）
 - 命名: video-entitlement-v{version}-{YYYYMMDD}-{HHmmss}.apk
 - 下载页: https://xs2026.site/downloads/
 - 特性: 高贵紫主题, 全屏沉浸, API驱动, SwipeRefreshLayout, 版本号显示
+- ⚠️ CI 打包注意：**不要再用 `android-actions/setup-android@v3`**（其内部 `sdkmanager tools`
+  因上游移除 tools 包而失败）；且仓库内 `video-entitlement-android/local.properties` 的
+  `sdk.dir` 写死了旧 action 的 `/opt/android-sdk`，AGP 中它**优先于 ANDROID_HOME**，
+  故 CI 里必须按真实 SDK 路径覆写。详见 `2026-09-15-域名接入变更.md` 第七节。
+- **打包后必须单独登记版本表**（CI 不会自动登记）：`ops/deploy/register-version.sh <versionName> <versionCode> <apk文件名> "<说明>"`
+
+## GitHub 访问方式（2026-09-15 起，重要）
+- ⚠️ 本机 **`github.com:443` 不通**（解析到被墙 IP，hosts 无权限改），`git push` 不可用；
+  但 `api.github.com` 正常。
+- 推送改用 `ops/github/push-via-api.ps1`（GitHub REST API 建 blob→tree→commit→更新 main），
+  等效一次正常 push，会触发 `deploy.yml`。操作前先核对脚本里的 `$expectBase` 与远端 main。
 
 ## 数据库
 - video_platform: 核心表, 有 platform_type 字段
