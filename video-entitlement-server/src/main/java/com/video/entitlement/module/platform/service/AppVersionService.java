@@ -28,7 +28,7 @@ public class AppVersionService {
     @Value("${app.apk-dir:/data/video-apk}")
     private String apkDir;
 
-    @Value("${app.download-base:http://64.90.19.6:8082/downloads}")
+    @Value("${app.download-base:https://xs2026.site/downloads}")
     private String downloadBase;
 
     /**

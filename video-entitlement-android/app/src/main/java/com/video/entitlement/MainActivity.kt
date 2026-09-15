@@ -72,7 +72,7 @@ class MainActivity : AppCompatActivity() {
     private var currentSearch = ""
 
     private val dp1 get() = resources.displayMetrics.density
-    private val API_BASE = "http://64.90.19.6:8081"
+    private val API_BASE = "https://xs2026.site"
 
     // 品牌色映射（用于圆形 logo 背景）
     private val brandColors = mapOf(

@@ -23,7 +23,7 @@ env:
   # ubuntu 无写权限会 Permission denied。与项目原 build_and_deploy.sh（root@host）一致。
   SERVER_USER: root
   DEPLOY_DIR: /data/video-apk
-  DOMAIN: http://64.90.19.6:8082
+  DOMAIN: https://xs2026.site
   ANDROID_DIR: video-entitlement-android
 
 jobs:

@@ -130,7 +130,7 @@ jobs:
               -e ENTITLEMENT_HMAC_KEY=${{ secrets.ENTITLEMENT_HMAC_KEY }} \
               -e SWAGGER_ENABLED=false \
               -e APP_APK_DIR=/data/video-apk \
-              -e APP_DOWNLOAD_BASE=http://64.90.19.6:8082/downloads \
+              -e APP_DOWNLOAD_BASE=https://xs2026.site/downloads \
               -v /data/video-apk:/data/video-apk \
               ${{ env.BACKEND_IMAGE }}:latest
             
@@ -140,6 +140,13 @@ jobs:
               -p 8082:80 \
               -v /data/video-apk:/usr/share/nginx/html/downloads:ro \
               ${{ env.FRONTEND_IMAGE }}:latest
+            
+            # 接入 mini-novel 网关网络：域名 https://xs2026.site/platform/ 由
+            # mini-novel-gateway 反代到 video-frontend/video-backend。
+            # 容器每次部署都会重建，网络连接不会保留，故每次都要重新接。
+            # 纯新增连接，不改动 mini-novel 任何容器/配置/网络。
+            docker network connect deploy_default video-backend 2>/dev/null || true
+            docker network connect deploy_default video-frontend 2>/dev/null || true
             
             echo "=== 部署完成 ==="
             docker ps --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}" | grep video

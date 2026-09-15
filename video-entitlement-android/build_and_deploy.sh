@@ -15,7 +15,7 @@ SERVER="root@64.90.19.6"
 SSH_KEY="$HOME/.ssh/video-pro-key"
 PORT=52527
 DEPLOY_DIR="/data/video-apk"
-DOMAIN="http://64.90.19.6:8082"
+DOMAIN="https://xs2026.site"
 
 # 本地备份
 cp "$SRC_APK" "/workspace/${APK_NAME}"

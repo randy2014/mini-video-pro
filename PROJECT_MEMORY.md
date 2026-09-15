@@ -10,9 +10,27 @@
 
 ## 服务器信息
 - IP: 64.90.19.6（SSH 端口 52527，用户 root；已于 2026-08-04 从旧服务器 43.161.222.78 迁移）
-- SSH Key: ~/.ssh/video-pro-key
+- SSH Key: `~/.ssh/mini_h5_vps_ed25519_v2`（⚠️ 旧文档写的 `~/.ssh/video-pro-key` 在本机**已不存在**，2026-09-15 实测可用的是这把）
 - MySQL root: VideoPro@2024!
 - Admin: admin / Admin@123
+
+## 对外访问入口（2026-09-15 起）
+| 用途 | 地址 |
+|------|------|
+| 管理后台 | **https://xs2026.site/platform/** |
+| App 端 API | **https://xs2026.site/api/v1/...** |
+| 管理端 API | **https://xs2026.site/admin/api/v1/...** |
+| APK 下载页 | **https://xs2026.site/downloads/** |
+| 直连兜底（IP+端口，仍然可用） | http://64.90.19.6:8082/ 、http://64.90.19.6:8081/ |
+
+> ⚠️ **域名不在本项目手里**：xs2026.site 的 80/443 由**另一个项目 mini-novel** 的网关容器
+> `mini-novel-gateway`（nginx，配置 `/opt/mini-h5/deploy/gateway/nginx.conf`）持有。
+> 本项目通过在该网关**新增** 4 条 location（`/platform/`、`/downloads/`、`/admin/api/`、`/api/v1/`）
+> 接入域名，未改动 mini-novel 任何现有路由。
+> - 补丁脚本：`ops/gateway-patch/apply-gateway-patch.sh`（服务器上在 `/opt/video-entitlement-gateway/`）
+> - ⚠️ **`/opt/mini-h5` 是 mini-novel 的 rsync 同步目录，它每次部署都会覆盖 `deploy/gateway/nginx.conf`**（补丁会被抹掉）→ **mini-novel 重新部署后必须重跑该脚本**（幂等）。
+> - ⚠️ 网关对单文件 bind mount 会**缓存 inode**：改完配置若 `nginx -s reload` 不生效，需 `docker restart mini-novel-gateway` 重新解析挂载。
+> - `video-frontend` / `video-backend` 需接入 `deploy_default` 网络才能被网关解析到（`deploy.yml` 每次部署已自动 `docker network connect`）。
 
 ## Docker 容器
 | 容器 | 端口 | 备注 |
@@ -39,9 +57,11 @@
 
 ## Android APK
 - 版本: v1.2 (versionCode 3)
-- 构建脚本: build_and_deploy.sh (构建→时间戳命名→二维码→上传)
+- 构建脚本: build_and_deploy.sh (构建→时间戳命名→二维码→上传) — ⚠️ 已弃用，打包走 CI
+- 打包工作流: `.github/workflows/build-android.yml`（workflow_dispatch 手动触发）
+- API 基址: `https://xs2026.site`（App 调 `/api/v1/...`；原为 `http://64.90.19.6:8081`）
 - 命名: video-entitlement-v{version}-{YYYYMMDD}-{HHmmss}.apk
-- 下载页: http://64.90.19.6:8082/downloads/
+- 下载页: https://xs2026.site/downloads/
 - 特性: 高贵紫主题, 全屏沉浸, API驱动, SwipeRefreshLayout, 版本号显示
 
 ## 数据库

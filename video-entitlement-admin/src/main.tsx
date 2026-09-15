@@ -10,7 +10,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <ConfigProvider locale={zhCN} theme={{ token: { colorPrimary: '#1677ff' } }}>
       <AntdApp>
-        <BrowserRouter>
+        <BrowserRouter basename="/platform">
           <App />
         </BrowserRouter>
       </AntdApp>

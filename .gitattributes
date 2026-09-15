@@ -1,0 +1,2 @@
+# Shell 脚本必须保持 LF：CRLF 会导致 Linux 上 bash 报 "$'\r': command not found"
+*.sh text eol=lf
