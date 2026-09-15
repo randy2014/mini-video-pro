@@ -38,13 +38,38 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Set up Android SDK
-        uses: android-actions/setup-android@v3
+      # ⚠️ 2026-09-15：原先用 android-actions/setup-android@v3，但该 action 内部会执行
+      # `sdkmanager tools`，而新版 Android SDK 仓库**已移除 tools 包** →
+      #   Warning: Failed to find package 'tools'
+      #   Error: The process '.../sdkmanager' failed with exit code 1
+      # 导致构建在安装 SDK 阶段就中断（2026-09-01 时还能跑通，属上游变更）。
+      # ubuntu-latest runner 本身已预装 Android SDK，故改为直接使用预装 SDK，
+      # 不再依赖该 action，并把 cmdline-tools 显式加入 PATH。
+      - name: Set up Android SDK (use runner preinstalled)
+        run: |
+          SDK_ROOT="${ANDROID_HOME:-${ANDROID_SDK_ROOT:-/usr/local/lib/android/sdk}}"
+          echo "SDK_ROOT=$SDK_ROOT"
+          ls -1 "$SDK_ROOT" || true
+          CT="$(find "$SDK_ROOT/cmdline-tools" -maxdepth 1 -mindepth 1 -type d 2>/dev/null | sort | tail -1)"
+          echo "cmdline-tools=$CT"
+          if [ -z "$CT" ]; then echo "找不到 cmdline-tools" >&2; exit 1; fi
+          echo "$CT/bin" >> "$GITHUB_PATH"
+          echo "ANDROID_HOME=$SDK_ROOT" >> "$GITHUB_ENV"
+          echo "ANDROID_SDK_ROOT=$SDK_ROOT" >> "$GITHUB_ENV"
+          # ⚠️ 仓库里跟踪着 local.properties（内容 sdk.dir=/opt/android-sdk，是旧
+          # android-actions/setup-android 的安装路径）。AGP 里 local.properties 的
+          # sdk.dir **优先于** ANDROID_HOME，路径不存在会直接报 "SDK location not found"。
+          # 这里按 runner 真实 SDK 路径覆写，保证与上面选定的 SDK_ROOT 一致。
+          echo "sdk.dir=$SDK_ROOT" > "${{ env.ANDROID_DIR }}/local.properties"
+          echo "--- local.properties ---"
+          cat "${{ env.ANDROID_DIR }}/local.properties"
 
       - name: Install SDK platform & build-tools
         run: |
           yes | sdkmanager --licenses >/dev/null 2>&1 || true
           sdkmanager "platforms;android-35" "build-tools;35.0.0"
+          echo "--- 已安装 ---"
+          ls -1 "${ANDROID_HOME}/build-tools" || true
 
       - name: Make gradlew executable
         run: chmod +x gradlew
